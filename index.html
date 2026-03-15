@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dram Diary™ — Track Your Journey, Share Your Passion</title>
+  <meta name="description" content="Dram Diary is the premium whiskey collection tracker for serious collectors. Track value, tasting notes, rarity, and more."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --gold-dim: #8B6914;
+      --copper: #B87333;
+      --copper-light: #D4956A;
+      --bg-deep: #1a1a1a;
+      --bg: #262626;
+      --bg-elevated: #2e2e2e;
+      --bg-card: #323232;
+      --border: rgba(201,168,76,0.18);
+      --cream: #F5EDD6;
+      --cream-mid: #C8B89A;
+      --cream-dim: #7A6E5F;
+      --sage: #4c948e;
+      --slate: #2e4057;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--cream);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: linear-gradient(to bottom, rgba(26,26,26,0.98), transparent);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(26,26,26,0.97);
+      border-bottom-color: var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--cream-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(201,168,76,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(76,148,142,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 80% 70%, rgba(184,115,51,0.05) 0%, transparent 60%);
+    }
+
+    /* Decorative horizontal rules */
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    }
+    .hero::before { top: 100px; }
+    .hero::after  { bottom: 60px; }
+
+    .hero-eyebrow {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-logo {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.35s forwards;
+      filter: drop-shadow(0 8px 32px rgba(201,168,76,0.25));
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--cream) 0%, var(--gold-light) 50%, var(--cream) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.5s forwards;
+    }
+
+    .hero-tagline {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: var(--cream-mid);
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.65s forwards;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.8s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gold);
+      color: #1a1a1a;
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 16px 32px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(201,168,76,0.3);
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(201,168,76,0.45);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: var(--cream-mid);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      padding: 16px 32px;
+      border-radius: 6px;
+      border: 1px solid rgba(201,168,76,0.25);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: default;
+      opacity: 0.5;
+    }
+    .app-badge span {
+      display: flex;
+      flex-direction: column;
+    }
+    .app-badge .badge-sub {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--cream-dim);
+    }
+    .app-badge .badge-main {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 48px;
+      margin: 0 auto;
+      max-width: 900px;
+    }
+    .section-divider::before, .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border));
+    }
+    .section-divider::after {
+      background: linear-gradient(to left, transparent, var(--border));
+    }
+    .divider-gem {
+      width: 8px;
+      height: 8px;
+      background: var(--gold-dim);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      text-align: center;
+      color: var(--cream);
+      margin-bottom: 64px;
+      line-height: 1.15;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .feature-card {
+      background: var(--bg-elevated);
+      padding: 40px 36px;
+      transition: background 0.3s;
+      position: relative;
+    }
+    .feature-card:hover { background: var(--bg-card); }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--feature-accent, var(--gold));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--feature-bg, rgba(201,168,76,0.1));
+      border: 1px solid var(--feature-border, rgba(201,168,76,0.2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .feature-name {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      color: var(--cream-dim);
+      line-height: 1.65;
+    }
+
+    /* ── APP PREVIEW ── */
+    .preview {
+      padding: 80px 24px 100px;
+      text-align: center;
+      position: relative;
+    }
+
+    .preview-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .phone-mockup {
+      display: inline-block;
+      position: relative;
+      margin-top: 56px;
+    }
+
+    .phone-frame {
+      width: 280px;
+      height: 560px;
+      border-radius: 44px;
+      border: 2px solid rgba(201,168,76,0.3);
+      background: var(--bg-card);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 32px 80px rgba(0,0,0,0.6),
+        0 0 60px rgba(201,168,76,0.08);
+      position: relative;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    /* glow behind phone */
+    .phone-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── STATS ── */
+    .stats {
+      padding: 80px 24px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 48px;
+      text-align: center;
+    }
+    .stat-number {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--cream-dim);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 60px 48px 40px;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    .footer-brand {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .footer-tagline {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--cream-dim);
+    }
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--cream-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 40px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(201,168,76,0.08);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--cream-dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      footer { padding: 48px 24px 32px; }
+      .footer-inner { flex-direction: column; gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">DRAM DIARY™</a>
+    <ul class="nav-links">
+      <li><a href="#features">FEATURES</a></li>
+      <li><a href="privacy.html">PRIVACY</a></li>
+      <li><a href="support.html">SUPPORT</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <p class="hero-eyebrow">COMING SOON TO THE APP STORE</p>
+    <img class="hero-logo" src="logo.png" alt="Dram Diary Logo"/>
+    <h1 class="hero-title">Dram Diary</h1>
+    <p class="hero-tagline">Track your journey, share your passion</p>
+    <div class="hero-cta-group">
+      <span class="app-badge">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="color:#ccc"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 13.86 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c0 2.5 2 4 2 4"/></svg>
+        <span>
+          <span class="badge-sub">DOWNLOAD ON THE</span>
+          <span class="badge-main">App Store</span>
+        </span>
+      </span>
+      <a href="#features" class="btn-secondary">EXPLORE FEATURES ↓</a>
+    </div>
+  </section>
+
+  <div class="section-divider"><div class="divider-gem"></div></div>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <p class="section-label reveal">WHAT'S INSIDE</p>
+    <h2 class="section-title reveal">Everything a serious<br/><em>collector needs</em></h2>
+
+    <div class="features-grid">
+      <div class="feature-card reveal" style="--feature-accent:var(--gold);--feature-bg:rgba(201,168,76,0.08);--feature-border:rgba(201,168,76,0.18)">
+        <div class="feature-icon">🥃</div>
+        <p class="feature-name">COLLECTION TRACKING</p>
+        <p class="feature-desc">Catalog every bottle with proof, age, distillery, purchase price, barrel number, and storage location. Your entire shelf, organized.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--copper-light);--feature-bg:rgba(184,115,51,0.08);--feature-border:rgba(184,115,51,0.18)">
+        <div class="feature-icon">📈</div>
+        <p class="feature-name">PORTFOLIO VALUE</p>
+        <p class="feature-desc">Track what you paid versus current market value. See your total gain, top gainers, and price-per-ounce across your entire collection.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--sage);--feature-bg:rgba(76,148,142,0.08);--feature-border:rgba(76,148,142,0.18)">
+        <div class="feature-icon">📷</div>
+        <p class="feature-name">BARCODE SCANNER</p>
+        <p class="feature-desc">Scan any bottle to instantly look up details, market pricing, and rarity. Add it to your collection or wishlist in seconds.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--gold-light);--feature-bg:rgba(232,201,106,0.06);--feature-border:rgba(232,201,106,0.15)">
+        <div class="feature-icon">📝</div>
+        <p class="feature-name">TASTING NOTES</p>
+        <p class="feature-desc">Log detailed tasting notes and personal ratings for every bottle you open. Build a searchable record of everything you've tasted.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:#9b7fd4;--feature-bg:rgba(155,127,212,0.08);--feature-border:rgba(155,127,212,0.18)">
+        <div class="feature-icon">🏆</div>
+        <p class="feature-name">ACHIEVEMENTS</p>
+        <p class="feature-desc">Earn badges as your collection grows. From First Dram to The Warehouse, track your milestones and see how you rank in the community.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--copper);--feature-bg:rgba(184,115,51,0.06);--feature-border:rgba(184,115,51,0.15)">
+        <div class="feature-icon">📊</div>
+        <p class="feature-name">DEEP ANALYTICS</p>
+        <p class="feature-desc">Distillery loyalty breakdowns, collection rarity analysis, most collected bottles, and fill-level tracking for every open bottle.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"><div class="divider-gem"></div></div>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="stats-inner">
+      <div class="reveal">
+        <div class="stat-number">36+</div>
+        <div class="stat-label">ACHIEVEMENTS TO EARN</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-number">5</div>
+        <div class="stat-label">TABS OF INSIGHTS</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-number">∞</div>
+        <div class="stat-label">BOTTLES TO TRACK</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-number">1</div>
+        <div class="stat-label">APP FOR COLLECTORS</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <p class="footer-brand">DRAM DIARY™</p>
+        <p class="footer-tagline">Track your journey, share your passion</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#features">FEATURES</a></li>
+        <li><a href="privacy.html">PRIVACY POLICY</a></li>
+        <li><a href="support.html">SUPPORT</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Dram Diary™. All rights reserved.</span>
+      <span>Crafted for collectors</span>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll-based nav styling
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
