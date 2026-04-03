@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moderation — Dram Diary</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #f5f0e8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #262626;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid #333;
+    }
+    .emoji { font-size: 64px; margin-bottom: 24px; line-height: 1; }
+    h1 { font-size: 28px; margin-bottom: 12px; }
+    p { color: #aaa; font-size: 15px; line-height: 1.6; }
+    .detail {
+      margin-top: 20px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #666;
+    }
+    .logo {
+      margin-bottom: 32px;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #DAA520;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">Dram Diary™</div>
+    <div class="emoji" id="emoji">⏳</div>
+    <h1 id="title" style="color:#DAA520">Processing...</h1>
+    <p id="message">Please wait.</p>
+    <div class="detail" id="detail" style="display:none"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const status  = params.get('status');
+    const name    = params.get('name')    || '';
+    const field   = params.get('field')   || '';
+    const type    = params.get('type')    || 'submission';
+    const error   = params.get('error')   || '';
+
+    const emoji   = document.getElementById('emoji');
+    const title   = document.getElementById('title');
+    const message = document.getElementById('message');
+    const detail  = document.getElementById('detail');
+
+    if (status === 'approved') {
+      emoji.textContent   = '✅';
+      title.textContent   = type === 'edit' ? 'Edit Approved' : 'Bottle Approved';
+      title.style.color   = '#4CAF50';
+      message.innerHTML   = type === 'edit'
+        ? `The <strong style="color:#f5f0e8">${field}</strong> correction for <strong style="color:#f5f0e8">${decodeURIComponent(name)}</strong> has been applied to the catalog.`
+        : `<strong style="color:#f5f0e8">${decodeURIComponent(name)}</strong> has been approved and is now visible in the catalog.`;
+
+    } else if (status === 'rejected') {
+      emoji.textContent   = '❌';
+      title.textContent   = type === 'edit' ? 'Edit Rejected' : 'Bottle Rejected';
+      title.style.color   = '#B43C3C';
+      message.innerHTML   = type === 'edit'
+        ? `The <strong style="color:#f5f0e8">${field}</strong> correction for <strong style="color:#f5f0e8">${decodeURIComponent(name)}</strong> has been rejected.`
+        : `<strong style="color:#f5f0e8">${decodeURIComponent(name)}</strong> has been rejected and will not appear in the public catalog.`;
+
+    } else if (status === 'already_moderated') {
+      emoji.textContent   = 'ℹ️';
+      title.textContent   = 'Already Moderated';
+      title.style.color   = '#DAA520';
+      message.textContent = `This ${type === 'edit' ? 'edit' : 'bottle'} was already moderated. No changes made.`;
+
+    } else if (status === 'error') {
+      emoji.textContent   = '⚠️';
+      title.textContent   = 'Something went wrong';
+      title.style.color   = '#B43C3C';
+      message.textContent = 'An error occurred while processing this action.';
+      if (error) {
+        detail.style.display = 'block';
+        detail.textContent   = decodeURIComponent(error);
+      }
+
+    } else if (status === 'invalid') {
+      emoji.textContent   = '🔒';
+      title.textContent   = 'Invalid Link';
+      title.style.color   = '#B43C3C';
+      message.textContent = 'This link is invalid or has already been used.';
+
+    } else {
+      emoji.textContent   = '❓';
+      title.textContent   = 'Unknown Status';
+      title.style.color   = '#aaa';
+      message.textContent = 'No status was provided.';
+    }
+  </script>
+</body>
+</html>
