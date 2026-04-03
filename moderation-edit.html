@@ -209,8 +209,6 @@
   </div>
 
   <script>
-    const SUPABASE_URL  = 'https://okxuvrrcpvzchzoictsf.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reHV2cnJjcHZ6Y2h6b2ljdHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTU2MTAsImV4cCI6MjA4ODc3MTYxMH0.tQhWE2maV4eJLPoIlHYZW_lZzhgr5JX65jhK3R8zRmg';
     const EDGE_FN_URL   = 'https://okxuvrrcpvzchzoictsf.supabase.co/functions/v1/moderate-bottle';
 
     const params  = new URLSearchParams(window.location.search);
@@ -219,64 +217,45 @@
     const type    = params.get('type')  || 'submission';
 
     async function loadBottle() {
-      if (!id || !token) {
-        showError('Missing required parameters.');
-        return;
-      }
+      if (!id || !token) { showError('Missing required parameters.'); return; }
 
       try {
-        if (type === 'submission') {
-          // Fetch bottle directly from Supabase
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/bottles?id=eq.${id}&select=*`, {
-            headers: {
-              'apikey': SUPABASE_ANON,
-              'Authorization': `Bearer ${SUPABASE_ANON}`,
-            }
-          });
-          const rows = await res.json();
-          const bottle = rows?.[0];
-          if (!bottle) { showError('Bottle not found.'); return; }
+        const res = await fetch(
+          `${EDGE_FN_URL}?action=fetch&type=${type}&id=${id}&token=${encodeURIComponent(token)}`
+        );
+        const data = await res.json();
+        if (!data.ok) { showError(data.error || 'Failed to load data.'); return; }
 
-          document.getElementById('f-name').value       = bottle.name        || '';
-          document.getElementById('f-distillery').value = bottle.distillery  || '';
-          document.getElementById('f-type').value       = bottle.type        || 'bourbon';
-          document.getElementById('f-proof').value      = bottle.proof       || '';
-          document.getElementById('f-age').value        = bottle.age_statement || '';
-          document.getElementById('f-srp').value        = bottle.msrp        || '';
-          document.getElementById('f-market').value     = bottle.market_price || '';
-          document.getElementById('f-region').value     = bottle.region      || '';
-          document.getElementById('f-upc').value        = bottle.upc         || '';
+        if (type === 'submission') {
+          const bottle = data.bottle;
+          document.getElementById('f-name').value        = bottle.name          || '';
+          document.getElementById('f-distillery').value  = bottle.distillery    || '';
+          document.getElementById('f-type').value        = bottle.type          || 'bourbon';
+          document.getElementById('f-proof').value       = bottle.proof         || '';
+          document.getElementById('f-age').value         = bottle.age_statement || '';
+          document.getElementById('f-srp').value         = bottle.msrp          || '';
+          document.getElementById('f-market').value      = bottle.market_price  || '';
+          document.getElementById('f-region').value      = bottle.region        || '';
+          document.getElementById('f-upc').value         = bottle.upc           || '';
 
           document.getElementById('page-title').textContent    = 'Review Bottle Submission';
           document.getElementById('page-subtitle').textContent = 'Edit the details below as needed, then approve or reject.';
 
         } else if (type === 'edit') {
-          // Fetch the bottle_edit + related bottle
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/bottle_edits?id=eq.${id}&select=*,bottles(*)`, {
-            headers: {
-              'apikey': SUPABASE_ANON,
-              'Authorization': `Bearer ${SUPABASE_ANON}`,
-            }
-          });
-          const rows = await res.json();
-          const edit = rows?.[0];
-          if (!edit) { showError('Edit not found.'); return; }
-
+          const edit   = data.edit;
           const bottle = edit.bottles || {};
           const fieldName = edit.field_name || '';
 
-          // Pre-populate with current bottle values
-          document.getElementById('f-name').value       = bottle.name         || '';
-          document.getElementById('f-distillery').value = bottle.distillery   || '';
-          document.getElementById('f-type').value       = bottle.type         || 'bourbon';
-          document.getElementById('f-proof').value      = bottle.proof        || '';
-          document.getElementById('f-age').value        = bottle.age_statement || '';
-          document.getElementById('f-srp').value        = bottle.msrp         || '';
-          document.getElementById('f-market').value     = bottle.market_price  || '';
-          document.getElementById('f-region').value     = bottle.region        || '';
-          document.getElementById('f-upc').value        = bottle.upc           || '';
+          document.getElementById('f-name').value        = bottle.name          || '';
+          document.getElementById('f-distillery').value  = bottle.distillery    || '';
+          document.getElementById('f-type').value        = bottle.type          || 'bourbon';
+          document.getElementById('f-proof').value       = bottle.proof         || '';
+          document.getElementById('f-age').value         = bottle.age_statement || '';
+          document.getElementById('f-srp').value         = bottle.msrp          || '';
+          document.getElementById('f-market').value      = bottle.market_price  || '';
+          document.getElementById('f-region').value      = bottle.region        || '';
+          document.getElementById('f-upc').value         = bottle.upc           || '';
 
-          // Highlight the reported field
           const fieldMap = {
             name: 'f-name', distillery: 'f-distillery', type: 'f-type',
             proof: 'f-proof', age_statement: 'f-age', msrp: 'f-srp',
@@ -291,7 +270,6 @@
               note.className = 'field-note';
               note.textContent = `⚠️ User reported this field. They said: "${edit.new_value}"`;
               fieldEl.appendChild(note);
-              // Pre-fill with suggested value
               const inputEl = document.getElementById(highlightId);
               if (inputEl && edit.new_value) inputEl.value = edit.new_value;
             }
@@ -299,7 +277,6 @@
 
           const badge = document.getElementById('edit-badge-container');
           badge.innerHTML = `<div class="edit-badge">Field Correction: ${fieldName}</div>`;
-
           document.getElementById('page-title').textContent    = 'Review Field Correction';
           document.getElementById('page-subtitle').textContent = `A user reported an issue with the ${fieldName} field. Review and approve or reject below.`;
           document.getElementById('btn-approve').textContent   = '✅ Approve Correction';
