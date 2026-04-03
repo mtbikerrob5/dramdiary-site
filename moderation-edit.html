@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Bottle — Dram Diary</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #f5f0e8;
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #DAA520;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 24px;
+      color: #f5f0e8;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 32px;
+    }
+    .card {
+      background: #262626;
+      border-radius: 12px;
+      border: 1px solid #333;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+    .field {
+      margin-bottom: 20px;
+    }
+    .field:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #888;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    input, select {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #f5f0e8;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #DAA520;
+    }
+    select option { background: #1a1a1a; }
+    .field-highlight input, .field-highlight select {
+      border-color: #DAA520;
+      background: #1f1a00;
+    }
+    .field-note {
+      font-size: 11px;
+      color: #DAA520;
+      margin-top: 4px;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    button {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-approve { background: #4CAF50; color: #fff; }
+    .btn-reject  { background: #B43C3C; color: #fff; }
+    .status {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    .status.success { background: #1a3a1a; border: 1px solid #4CAF50; color: #4CAF50; display: block; }
+    .status.error   { background: #3a1a1a; border: 1px solid #B43C3C; color: #B43C3C; display: block; }
+    .loading {
+      text-align: center;
+      color: #666;
+      padding: 60px 0;
+      font-size: 15px;
+    }
+    .edit-badge {
+      display: inline-block;
+      background: #DAA52020;
+      border: 1px solid #DAA52060;
+      color: #DAA520;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Dram Diary™</div>
+    <div id="loading" class="loading">Loading bottle data…</div>
+    <div id="content" style="display:none">
+      <h1 id="page-title">Review Bottle</h1>
+      <p class="subtitle" id="page-subtitle">Review and edit the details below, then approve or reject.</p>
+
+      <div class="card" id="form-card">
+        <div id="edit-badge-container"></div>
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="f-name" placeholder="e.g. Pappy Van Winkle 15 Year">
+        </div>
+        <div class="field">
+          <label>Distillery</label>
+          <input type="text" id="f-distillery" placeholder="e.g. Old Rip Van Winkle">
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select id="f-type">
+            <option value="bourbon">Bourbon</option>
+            <option value="rye">Rye</option>
+            <option value="scotch_single_malt">Scotch Single Malt</option>
+            <option value="scotch_blended">Scotch Blended</option>
+            <option value="irish">Irish</option>
+            <option value="japanese">Japanese</option>
+            <option value="canadian">Canadian</option>
+            <option value="tennessee">Tennessee</option>
+            <option value="american_single_malt">American Single Malt</option>
+            <option value="american_blend">American Blend</option>
+            <option value="wheat">Wheat</option>
+            <option value="corn">Corn</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label>Proof</label>
+            <input type="number" id="f-proof" placeholder="e.g. 107" step="0.1">
+          </div>
+          <div class="field">
+            <label>Age (years)</label>
+            <input type="number" id="f-age" placeholder="e.g. 15">
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label>SRP ($)</label>
+            <input type="number" id="f-srp" placeholder="e.g. 129.99" step="0.01">
+          </div>
+          <div class="field">
+            <label>Secondary Market ($)</label>
+            <input type="number" id="f-market" placeholder="e.g. 250.00" step="0.01">
+          </div>
+        </div>
+        <div class="field">
+          <label>Region</label>
+          <input type="text" id="f-region" placeholder="e.g. Kentucky">
+        </div>
+        <div class="field">
+          <label>UPC</label>
+          <input type="text" id="f-upc" placeholder="e.g. 088076190469">
+        </div>
+
+        <div class="actions">
+          <button class="btn-approve" id="btn-approve" onclick="submitForm('approve')">✅ Approve with Edits</button>
+          <button class="btn-reject"  id="btn-reject"  onclick="submitForm('reject')">❌ Reject</button>
+        </div>
+        <div class="status" id="status-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL  = 'https://okxuvrrcpvzchzoictsf.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reHV2cnJjcHZ6Y2h6b2ljdHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5MDk5ODUsImV4cCI6MjA1MDQ4NTk4NX0.HcrCyLBMmL3fOk9fQb6OLOZJa0wWvSgHDJiPTlFCuvA';
+    const EDGE_FN_URL   = 'https://okxuvrrcpvzchzoictsf.supabase.co/functions/v1/moderate-bottle';
+
+    const params  = new URLSearchParams(window.location.search);
+    const id      = params.get('id')    || '';
+    const token   = params.get('token') || '';
+    const type    = params.get('type')  || 'submission';
+
+    async function loadBottle() {
+      if (!id || !token) {
+        showError('Missing required parameters.');
+        return;
+      }
+
+      try {
+        if (type === 'submission') {
+          // Fetch bottle directly from Supabase
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/bottles?id=eq.${id}&select=*`, {
+            headers: {
+              'apikey': SUPABASE_ANON,
+              'Authorization': `Bearer ${SUPABASE_ANON}`,
+            }
+          });
+          const rows = await res.json();
+          const bottle = rows?.[0];
+          if (!bottle) { showError('Bottle not found.'); return; }
+
+          document.getElementById('f-name').value       = bottle.name        || '';
+          document.getElementById('f-distillery').value = bottle.distillery  || '';
+          document.getElementById('f-type').value       = bottle.type        || 'bourbon';
+          document.getElementById('f-proof').value      = bottle.proof       || '';
+          document.getElementById('f-age').value        = bottle.age_statement || '';
+          document.getElementById('f-srp').value        = bottle.msrp        || '';
+          document.getElementById('f-market').value     = bottle.market_price || '';
+          document.getElementById('f-region').value     = bottle.region      || '';
+          document.getElementById('f-upc').value        = bottle.upc         || '';
+
+          document.getElementById('page-title').textContent    = 'Review Bottle Submission';
+          document.getElementById('page-subtitle').textContent = 'Edit the details below as needed, then approve or reject.';
+
+        } else if (type === 'edit') {
+          // Fetch the bottle_edit + related bottle
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/bottle_edits?id=eq.${id}&select=*,bottles(*)`, {
+            headers: {
+              'apikey': SUPABASE_ANON,
+              'Authorization': `Bearer ${SUPABASE_ANON}`,
+            }
+          });
+          const rows = await res.json();
+          const edit = rows?.[0];
+          if (!edit) { showError('Edit not found.'); return; }
+
+          const bottle = edit.bottles || {};
+          const fieldName = edit.field_name || '';
+
+          // Pre-populate with current bottle values
+          document.getElementById('f-name').value       = bottle.name         || '';
+          document.getElementById('f-distillery').value = bottle.distillery   || '';
+          document.getElementById('f-type').value       = bottle.type         || 'bourbon';
+          document.getElementById('f-proof').value      = bottle.proof        || '';
+          document.getElementById('f-age').value        = bottle.age_statement || '';
+          document.getElementById('f-srp').value        = bottle.msrp         || '';
+          document.getElementById('f-market').value     = bottle.market_price  || '';
+          document.getElementById('f-region').value     = bottle.region        || '';
+          document.getElementById('f-upc').value        = bottle.upc           || '';
+
+          // Highlight the reported field
+          const fieldMap = {
+            name: 'f-name', distillery: 'f-distillery', type: 'f-type',
+            proof: 'f-proof', age_statement: 'f-age', msrp: 'f-srp',
+            market_price: 'f-market', region: 'f-region', upc: 'f-upc',
+          };
+          const highlightId = fieldMap[fieldName];
+          if (highlightId) {
+            const fieldEl = document.getElementById(highlightId)?.closest('.field');
+            if (fieldEl) {
+              fieldEl.classList.add('field-highlight');
+              const note = document.createElement('div');
+              note.className = 'field-note';
+              note.textContent = `⚠️ User reported this field. They said: "${edit.new_value}"`;
+              fieldEl.appendChild(note);
+              // Pre-fill with suggested value
+              const inputEl = document.getElementById(highlightId);
+              if (inputEl && edit.new_value) inputEl.value = edit.new_value;
+            }
+          }
+
+          const badge = document.getElementById('edit-badge-container');
+          badge.innerHTML = `<div class="edit-badge">Field Correction: ${fieldName}</div>`;
+
+          document.getElementById('page-title').textContent    = 'Review Field Correction';
+          document.getElementById('page-subtitle').textContent = `A user reported an issue with the ${fieldName} field. Review and approve or reject below.`;
+          document.getElementById('btn-approve').textContent   = '✅ Approve Correction';
+        }
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+
+      } catch (e) {
+        showError('Failed to load bottle data: ' + e.message);
+      }
+    }
+
+    async function submitForm(action) {
+      const approveBtn = document.getElementById('btn-approve');
+      const rejectBtn  = document.getElementById('btn-reject');
+      approveBtn.disabled = true;
+      rejectBtn.disabled  = true;
+      approveBtn.textContent = action === 'approve' ? 'Saving…' : approveBtn.textContent;
+      rejectBtn.textContent  = action === 'reject'  ? 'Rejecting…' : rejectBtn.textContent;
+
+      const edits = {
+        name:         document.getElementById('f-name').value.trim(),
+        distillery:   document.getElementById('f-distillery').value.trim(),
+        type:         document.getElementById('f-type').value,
+        proof:        parseFloat(document.getElementById('f-proof').value) || null,
+        age_statement: parseInt(document.getElementById('f-age').value)    || null,
+        msrp:         parseFloat(document.getElementById('f-srp').value)   || null,
+        market_price: parseFloat(document.getElementById('f-market').value)|| null,
+        region:       document.getElementById('f-region').value.trim()     || null,
+        upc:          document.getElementById('f-upc').value.trim()        || null,
+      };
+
+      try {
+        const res = await fetch(
+          `${EDGE_FN_URL}?action=${action}&type=${type}&id=${id}&token=${encodeURIComponent(token)}&via=form`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ edits }),
+          }
+        );
+        const data = await res.json();
+        if (data.ok) {
+          const msg = document.getElementById('status-msg');
+          msg.className = 'status success';
+          msg.textContent = action === 'approve'
+            ? '✅ Bottle approved and catalog updated successfully.'
+            : '❌ Bottle rejected successfully.';
+          approveBtn.disabled = true;
+          rejectBtn.disabled  = true;
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (e) {
+        const msg = document.getElementById('status-msg');
+        msg.className = 'status error';
+        msg.textContent = 'Error: ' + e.message;
+        approveBtn.disabled = false;
+        rejectBtn.disabled  = false;
+        approveBtn.textContent = '✅ Approve with Edits';
+        rejectBtn.textContent  = '❌ Reject';
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById('loading').innerHTML =
+        `<div style="color:#B43C3C;padding:40px 0">⚠️ ${msg}</div>`;
+    }
+
+    loadBottle();
+  </script>
+</body>
+</html>
