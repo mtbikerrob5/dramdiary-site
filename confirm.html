@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email Confirmed — Dram Diary™</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #f5f0e8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #262626;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-top: 2px solid #C9A84C;
+    }
+    .logo {
+      font-family: -apple-system, sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #C9A84C;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+    .emoji { font-size: 56px; margin-bottom: 24px; line-height: 1; }
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #f5f0e8;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: #C8B89A;
+      line-height: 1.65;
+      margin-bottom: 32px;
+    }
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,168,76,0.2), transparent);
+      margin-bottom: 28px;
+    }
+    .open-app {
+      display: inline-block;
+      background: #C9A84C;
+      color: #1a1a1a;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .note {
+      font-size: 12px;
+      color: #7A6E5F;
+      line-height: 1.6;
+    }
+    .note a {
+      color: #8B6914;
+      text-decoration: none;
+    }
+    .note a:hover { color: #C9A84C; }
+    .footer {
+      margin-top: 32px;
+      font-size: 11px;
+      color: #5a5a5a;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">DRAM DIARY™</div>
+    <div class="emoji" id="emoji">✅</div>
+    <h1 id="title">Email Confirmed</h1>
+    <p class="subtitle" id="subtitle">
+      Your account is ready. Open the Dram Diary app on your iPhone and sign in to start building your collection.
+    </p>
+    <div class="divider"></div>
+    <a href="dramdiary://confirm" class="open-app" id="open-btn">OPEN THE APP</a>
+    <p class="note">
+      On a desktop? Just open the app on your iPhone and sign in — your email is already confirmed.
+      <br><br>
+      <a href="https://dramdiary.com">dramdiary.com</a>
+      &nbsp;·&nbsp;
+      <a href="https://dramdiary.com/support.html">Support</a>
+    </p>
+    <div class="footer">© 2026 Blanchard Labs LLC</div>
+  </div>
+
+  <script>
+    // Check for error in URL params (e.g. expired link)
+    const params = new URLSearchParams(window.location.search);
+    const errorCode = params.get('error_code');
+    const errorDesc = params.get('error_description');
+
+    if (errorCode || errorDesc) {
+      document.getElementById('emoji').textContent = '⚠️';
+      document.getElementById('title').textContent = 'Link Expired';
+      document.getElementById('subtitle').textContent =
+        'This confirmation link has expired or already been used. Open the app and sign in — if your email isn\'t confirmed yet, you can request a new link.';
+      document.getElementById('open-btn').style.display = 'none';
+    }
+
+    // On mobile, try to open the app automatically after a short delay
+    const isMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile && !errorCode) {
+      setTimeout(() => {
+        window.location.href = 'dramdiary://confirm';
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
