@@ -8,14 +8,16 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dram Diary™ — Track Your Journey, Share Your Passion</title>
-  <meta name="description" content="Dram Diary is the premium whiskey collection tracker for serious collectors. Track value, tasting notes, rarity, and more."/>
+  <meta name="description" content="Dram Diary is the premium whiskey collection tracker for serious collectors. Track value, tasting notes, rarity, barrel picks, and more. Available now on the App Store."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+
   <style>
     :root {
       --gold: #C9A84C;
       --gold-light: #E8C96A;
       --gold-dim: #8B6914;
+      --gold-faint: rgba(201,168,76,0.08);
       --copper: #B87333;
       --copper-light: #D4956A;
       --bg-deep: #1a1a1a;
@@ -23,15 +25,16 @@
       --bg-elevated: #2e2e2e;
       --bg-card: #323232;
       --border: rgba(201,168,76,0.18);
+      --border-faint: rgba(201,168,76,0.08);
       --cream: #F5EDD6;
       --cream-mid: #C8B89A;
       --cream-dim: #7A6E5F;
       --sage: #4c948e;
+      --sage-light: #6ab4ae;
       --slate: #2e4057;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -43,7 +46,7 @@
       overflow-x: hidden;
     }
 
-    /* ── GRAIN OVERLAY ── */
+    /* grain overlay */
     body::before {
       content: '';
       position: fixed;
@@ -103,7 +106,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 120px 24px 80px;
+      padding: 140px 24px 100px;
       position: relative;
       overflow: hidden;
     }
@@ -117,12 +120,10 @@
         radial-gradient(ellipse 40% 40% at 80% 70%, rgba(184,115,51,0.05) 0%, transparent 60%);
     }
 
-    /* Decorative horizontal rules */
     .hero::before, .hero::after {
       content: '';
       position: absolute;
-      left: 10%;
-      right: 10%;
+      left: 10%; right: 10%;
       height: 1px;
       background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
     }
@@ -140,14 +141,13 @@
     }
 
     .hero-logo {
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       object-fit: contain;
-      margin-bottom: 40px;
+      margin-bottom: 36px;
       opacity: 0;
       animation: fadeUp 0.9s ease 0.35s forwards;
       filter: drop-shadow(0 8px 32px rgba(201,168,76,0.25));
-      mix-blend-mode: normal;
     }
 
     .hero-title {
@@ -160,7 +160,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       opacity: 0;
       animation: fadeUp 0.9s ease 0.5s forwards;
     }
@@ -168,11 +168,21 @@
     .hero-tagline {
       font-family: 'Crimson Pro', Georgia, serif;
       font-style: italic;
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
       color: var(--cream-mid);
-      margin-bottom: 52px;
+      margin-bottom: 16px;
       opacity: 0;
       animation: fadeUp 0.9s ease 0.65s forwards;
+    }
+
+    .hero-sub {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--cream-dim);
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.72s forwards;
     }
 
     .hero-cta-group {
@@ -181,32 +191,58 @@
       flex-wrap: wrap;
       justify-content: center;
       opacity: 0;
-      animation: fadeUp 0.9s ease 0.8s forwards;
+      animation: fadeUp 0.9s ease 0.85s forwards;
     }
 
-    .btn-primary {
+    .btn-appstore {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       background: var(--gold);
       color: #1a1a1a;
       font-family: 'Josefin Sans', sans-serif;
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 2px;
-      padding: 16px 32px;
-      border-radius: 6px;
+      letter-spacing: 1.5px;
+      padding: 16px 28px;
+      border-radius: 8px;
       text-decoration: none;
       transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 24px rgba(201,168,76,0.3);
+      box-shadow: 0 4px 24px rgba(201,168,76,0.35);
     }
-    .btn-primary:hover {
+    .btn-appstore:hover {
       background: var(--gold-light);
       transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(201,168,76,0.45);
+      box-shadow: 0 8px 32px rgba(201,168,76,0.5);
     }
+    .btn-appstore svg { flex-shrink: 0; }
 
-    .btn-secondary {
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 20px;
+      border-radius: 12px;
+      opacity: 0.6;
+      cursor: default;
+    }
+    .app-badge .badge-sub {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--cream-dim);
+      display: block;
+    }
+    .app-badge .badge-main {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.5px;
+      display: block;
+    }
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -217,48 +253,14 @@
       font-weight: 400;
       letter-spacing: 2px;
       padding: 16px 32px;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid rgba(201,168,76,0.25);
       text-decoration: none;
       transition: border-color 0.2s, color 0.2s;
     }
-    .btn-secondary:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
 
-    .app-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      padding: 12px 20px;
-      border-radius: 12px;
-      text-decoration: none;
-      transition: background 0.2s, border-color 0.2s;
-      cursor: default;
-      opacity: 0.5;
-    }
-    .app-badge span {
-      display: flex;
-      flex-direction: column;
-    }
-    .app-badge .badge-sub {
-      font-family: 'Josefin Sans', sans-serif;
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      color: var(--cream-dim);
-    }
-    .app-badge .badge-main {
-      font-family: 'Josefin Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--cream);
-      letter-spacing: 0.5px;
-    }
-
-    /* ── DIVIDER ── */
+    /* ── SECTION DIVIDER ── */
     .section-divider {
       display: flex;
       align-items: center;
@@ -271,26 +273,17 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: linear-gradient(to right, transparent, var(--border));
     }
-    .section-divider::after {
-      background: linear-gradient(to left, transparent, var(--border));
-    }
+    .section-divider::before { background: linear-gradient(to right, transparent, var(--border)); }
+    .section-divider::after  { background: linear-gradient(to left, transparent, var(--border)); }
     .divider-gem {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       background: var(--gold-dim);
       transform: rotate(45deg);
       flex-shrink: 0;
     }
 
-    /* ── FEATURES ── */
-    .features {
-      padding: 100px 24px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
+    /* ── SECTION LABELS ── */
     .section-label {
       font-family: 'Josefin Sans', sans-serif;
       font-size: 10px;
@@ -299,20 +292,207 @@
       text-align: center;
       margin-bottom: 16px;
     }
-
     .section-title {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-size: clamp(2rem, 4vw, 3rem);
       font-weight: 700;
       text-align: center;
       color: var(--cream);
-      margin-bottom: 64px;
+      margin-bottom: 20px;
       line-height: 1.15;
+    }
+    .section-body {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 18px;
+      color: var(--cream-dim);
+      text-align: center;
+      max-width: 620px;
+      margin: 0 auto 64px;
+      line-height: 1.7;
+    }
+
+    /* ── DATA STATEMENT ── */
+    .data-statement {
+      padding: 100px 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .data-statement .big-quote {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--cream);
+      line-height: 1.4;
+      margin-bottom: 32px;
+    }
+    .data-statement .big-quote em {
+      color: var(--gold-light);
+      font-style: normal;
+    }
+    .data-pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 56px;
+    }
+    .data-pillar {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-faint);
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: left;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .data-pillar:hover {
+      border-color: var(--border);
+      background: var(--bg-card);
+    }
+    .pillar-number {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .pillar-label {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      color: var(--cream-dim);
+      margin-bottom: 10px;
+    }
+    .pillar-desc {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 15px;
+      color: var(--cream-mid);
+      line-height: 1.55;
+    }
+
+    /* ── SCREENSHOT SHOWCASE ── */
+    .showcase {
+      padding: 80px 0 100px;
+      overflow: hidden;
+    }
+    .showcase-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .showcase-row {
+      display: flex;
+      align-items: center;
+      gap: 64px;
+      margin-bottom: 120px;
+    }
+    .showcase-row:last-child { margin-bottom: 0; }
+    .showcase-row.reverse { flex-direction: row-reverse; }
+
+    .showcase-copy {
+      flex: 1;
+      min-width: 0;
+    }
+    .showcase-tag {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .showcase-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .showcase-heading em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+    .showcase-text {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 17px;
+      color: var(--cream-dim);
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+    .showcase-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .showcase-bullets li {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      color: var(--cream-mid);
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .showcase-bullets li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--gold-dim);
+    }
+
+    .showcase-phones {
+      flex-shrink: 0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .phone-wrap {
+      position: relative;
+    }
+    .phone-wrap.offset { transform: translateY(-24px); }
+
+    .phone-frame {
+      width: 200px;
+      border-radius: 36px;
+      border: 1.5px solid rgba(201,168,76,0.25);
+      background: var(--bg-card);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.4),
+        0 24px 60px rgba(0,0,0,0.55),
+        0 0 40px rgba(201,168,76,0.06);
+      position: relative;
+    }
+    .phone-frame img {
+      width: 100%;
+      display: block;
+    }
+    .phone-glow {
+      position: absolute;
+      inset: -30px;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* single phone, larger */
+    .phone-frame.large {
+      width: 240px;
+      border-radius: 40px;
+    }
+
+    /* ── FEATURES GRID ── */
+    .features {
+      padding: 80px 24px 100px;
+      max-width: 1100px;
+      margin: 0 auto;
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
       gap: 2px;
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -321,12 +501,11 @@
 
     .feature-card {
       background: var(--bg-elevated);
-      padding: 40px 36px;
+      padding: 36px 32px;
       transition: background 0.3s;
       position: relative;
     }
     .feature-card:hover { background: var(--bg-card); }
-
     .feature-card::before {
       content: '';
       position: absolute;
@@ -339,8 +518,7 @@
     .feature-card:hover::before { opacity: 1; }
 
     .feature-icon {
-      width: 44px;
-      height: 44px;
+      width: 44px; height: 44px;
       border-radius: 12px;
       background: var(--feature-bg, rgba(201,168,76,0.1));
       border: 1px solid var(--feature-border, rgba(201,168,76,0.2));
@@ -350,16 +528,14 @@
       margin-bottom: 20px;
       font-size: 20px;
     }
-
     .feature-name {
       font-family: 'Josefin Sans', sans-serif;
-      font-size: 13px;
+      font-size: 12px;
       letter-spacing: 2px;
       font-weight: 600;
       color: var(--cream);
       margin-bottom: 10px;
     }
-
     .feature-desc {
       font-family: 'Crimson Pro', Georgia, serif;
       font-size: 16px;
@@ -367,54 +543,108 @@
       line-height: 1.65;
     }
 
-    /* ── APP PREVIEW ── */
-    .preview {
-      padding: 80px 24px 100px;
-      text-align: center;
-      position: relative;
-    }
-
-    .preview-inner {
+    /* ── BARREL PICK CALLOUT ── */
+    .barrel-callout {
+      padding: 80px 24px;
       max-width: 900px;
       margin: 0 auto;
     }
-
-    .phone-mockup {
-      display: inline-block;
+    .barrel-card {
+      background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, rgba(184,115,51,0.04) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 56px 48px;
       position: relative;
-      margin-top: 56px;
-    }
-
-    .phone-frame {
-      width: 280px;
-      height: 560px;
-      border-radius: 44px;
-      border: 2px solid rgba(201,168,76,0.3);
-      background: var(--bg-card);
       overflow: hidden;
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,0.5),
-        0 32px 80px rgba(0,0,0,0.6),
-        0 0 60px rgba(201,168,76,0.08);
-      position: relative;
     }
-
-    .phone-screen {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top;
-    }
-
-    /* glow behind phone */
-    .phone-glow {
+    .barrel-card::before {
+      content: '';
       position: absolute;
-      inset: -40px;
-      background: radial-gradient(ellipse at center, rgba(201,168,76,0.12) 0%, transparent 70%);
-      pointer-events: none;
+      top: -1px; left: 10%; right: 10%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .barrel-eyebrow {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .barrel-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .barrel-heading em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+    .barrel-text {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 18px;
+      color: var(--cream-dim);
+      line-height: 1.75;
+      margin-bottom: 36px;
+      max-width: 580px;
+    }
+    .barrel-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .barrel-field {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      background: rgba(201,168,76,0.06);
+      padding: 6px 14px;
+      border-radius: 4px;
     }
 
-    /* ── STATS ── */
+    /* ── CUSTOMIZATION SECTION ── */
+    .customization {
+      padding: 80px 24px 100px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .custom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 48px;
+    }
+    .custom-card {
+      background: var(--bg-elevated);
+      padding: 36px 32px;
+      transition: background 0.3s;
+    }
+    .custom-card:hover { background: var(--bg-card); }
+    .custom-icon { font-size: 28px; margin-bottom: 16px; }
+    .custom-name {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--cream);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .custom-desc {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      color: var(--cream-dim);
+      line-height: 1.65;
+    }
+
+    /* ── STATS BAR ── */
     .stats {
       padding: 80px 24px;
       border-top: 1px solid var(--border);
@@ -424,7 +654,7 @@
       max-width: 900px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 48px;
       text-align: center;
     }
@@ -439,8 +669,33 @@
     .stat-label {
       font-family: 'Josefin Sans', sans-serif;
       font-size: 10px;
-      letter-spacing: 3px;
+      letter-spacing: 2.5px;
       color: var(--cream-dim);
+    }
+
+    /* ── FINAL CTA ── */
+    .final-cta {
+      padding: 120px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%);
+    }
+    .final-cta .hero-title {
+      font-size: clamp(2rem, 5vw, 4rem);
+      margin-bottom: 16px;
+      opacity: 1;
+      animation: none;
+    }
+    .final-cta .hero-tagline {
+      opacity: 1;
+      animation: none;
+      margin-bottom: 48px;
     }
 
     /* ── FOOTER ── */
@@ -518,12 +773,23 @@
     }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .showcase-row,
+      .showcase-row.reverse { flex-direction: column; gap: 40px; }
+      .showcase-phones { flex-direction: row; }
+      .phone-frame { width: 160px; }
+      .phone-frame.large { width: 180px; }
+      .custom-grid { grid-template-columns: 1fr; }
+      .barrel-card { padding: 36px 28px; }
+    }
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
       .features-grid { grid-template-columns: 1fr; }
       footer { padding: 48px 24px 32px; }
       .footer-inner { flex-direction: column; gap: 24px; }
+      .showcase-phones { gap: 10px; }
+      .phone-frame { width: 140px; border-radius: 28px; }
     }
   </style>
 </head>
@@ -534,6 +800,7 @@
     <a href="/" class="nav-logo">DRAM DIARY™</a>
     <ul class="nav-links">
       <li><a href="#features">FEATURES</a></li>
+      <li><a href="#analytics">ANALYTICS</a></li>
       <li><a href="privacy.html">PRIVACY</a></li>
       <li><a href="terms.html">TERMS</a></li>
       <li><a href="support.html">SUPPORT</a></li>
@@ -547,11 +814,12 @@
     <img class="hero-logo" src="logo.png" alt="Dram Diary Logo"/>
     <h1 class="hero-title">Dram Diary</h1>
     <p class="hero-tagline">Track your journey, share your passion</p>
+    <p class="hero-sub">THE WHISKEY COLLECTOR'S COMPANION</p>
     <div class="hero-cta-group">
       <span class="app-badge">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="color:#ccc"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 13.86 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c0 2.5 2 4 2 4"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#aaa"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 13.86 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c0 2.5 2 4 2 4"/></svg>
         <span>
-          <span class="badge-sub">DOWNLOAD ON THE</span>
+          <span class="badge-sub">COMING SOON TO THE</span>
           <span class="badge-main">App Store</span>
         </span>
       </span>
@@ -561,66 +829,311 @@
 
   <div class="section-divider"><div class="divider-gem"></div></div>
 
-  <!-- FEATURES -->
-  <section class="features" id="features">
-    <p class="section-label reveal">WHAT'S INSIDE</p>
-    <h2 class="section-title reveal">Everything a serious<br/><em>collector needs</em></h2>
+  <!-- DATA STATEMENT -->
+  <section class="data-statement">
+    <p class="section-label reveal">BUILT FOR COLLECTORS</p>
+    <p class="big-quote reveal">
+      Your collection tells a story.<br/>
+      Dram Diary turns it into <em>data</em>.
+    </p>
+    <p class="section-body reveal" style="margin-bottom: 0;">
+      Most whiskey apps let you make a list. Dram Diary goes further — tracking what you paid versus what it's worth, how long bottles have been open, which distilleries own your shelf, and which pours deserve to be finished first. It's the difference between a hobby and a pursuit.
+    </p>
 
-    <div class="features-grid">
-      <div class="feature-card reveal" style="--feature-accent:var(--gold);--feature-bg:rgba(201,168,76,0.08);--feature-border:rgba(201,168,76,0.18)">
-        <div class="feature-icon">🥃</div>
-        <p class="feature-name">COLLECTION TRACKING</p>
-        <p class="feature-desc">Catalog every bottle with proof, age, distillery, purchase price, barrel number, and storage location. Your entire shelf, organized.</p>
+    <div class="data-pillars">
+      <div class="data-pillar reveal">
+        <div class="pillar-number">1,300+</div>
+        <div class="pillar-label">BOTTLE CATALOG</div>
+        <div class="pillar-desc">Community-powered master catalog with barcode scanning. Scan any bottle and get instant details, or submit one we don't have yet.</div>
       </div>
-      <div class="feature-card reveal" style="--feature-accent:var(--copper-light);--feature-bg:rgba(184,115,51,0.08);--feature-border:rgba(184,115,51,0.18)">
-        <div class="feature-icon">📈</div>
-        <p class="feature-name">PORTFOLIO VALUE</p>
-        <p class="feature-desc">Track what you paid versus current market value. See your total gain, top gainers, and price-per-ounce across your entire collection.</p>
+      <div class="data-pillar reveal">
+        <div class="pillar-number">36</div>
+        <div class="pillar-label">ACHIEVEMENTS</div>
+        <div class="pillar-desc">Earn badges across 7 categories — Collection, Loyalty, Hunting, Variety, Pours, Community, and Prestige. Your milestones, documented.</div>
       </div>
-      <div class="feature-card reveal" style="--feature-accent:var(--sage);--feature-bg:rgba(76,148,142,0.08);--feature-border:rgba(76,148,142,0.18)">
-        <div class="feature-icon">📷</div>
-        <p class="feature-name">BARCODE SCANNER</p>
-        <p class="feature-desc">Scan any bottle to instantly look up details, market pricing, and rarity. Add it to your collection or wishlist in seconds.</p>
+      <div class="data-pillar reveal">
+        <div class="pillar-number">∞</div>
+        <div class="pillar-label">BOTTLES TO TRACK</div>
+        <div class="pillar-desc">No limits. From your first bottle to your hundredth, every pour, every barrel pick, every infinity blend — all in one place.</div>
       </div>
-      <div class="feature-card reveal" style="--feature-accent:var(--gold-light);--feature-bg:rgba(232,201,106,0.06);--feature-border:rgba(232,201,106,0.15)">
-        <div class="feature-icon">📝</div>
-        <p class="feature-name">TASTING NOTES</p>
-        <p class="feature-desc">Log detailed tasting notes and personal ratings for every bottle you open. Build a searchable record of everything you've tasted.</p>
-      </div>
-      <div class="feature-card reveal" style="--feature-accent:#9b7fd4;--feature-bg:rgba(155,127,212,0.08);--feature-border:rgba(155,127,212,0.18)">
-        <div class="feature-icon">🏆</div>
-        <p class="feature-name">ACHIEVEMENTS</p>
-        <p class="feature-desc">Earn badges as your collection grows. From First Dram to The Warehouse, track your milestones and see how you rank in the community.</p>
-      </div>
-      <div class="feature-card reveal" style="--feature-accent:var(--copper);--feature-bg:rgba(184,115,51,0.06);--feature-border:rgba(184,115,51,0.15)">
-        <div class="feature-icon">📊</div>
-        <p class="feature-name">DEEP ANALYTICS</p>
-        <p class="feature-desc">Distillery loyalty breakdowns, collection rarity analysis, most collected bottles, and fill-level tracking for every open bottle.</p>
+      <div class="data-pillar reveal">
+        <div class="pillar-number">5</div>
+        <div class="pillar-label">TABS OF INSIGHTS</div>
+        <div class="pillar-desc">Dashboard, Collection, Scan, Analytics, and Community. Each tab surfaces a different layer of your whiskey life.</div>
       </div>
     </div>
   </section>
 
   <div class="section-divider"><div class="divider-gem"></div></div>
 
+  <!-- SHOWCASE: DASHBOARD -->
+  <section class="showcase" id="features">
+    <div class="showcase-inner">
+
+      <div class="showcase-row reveal">
+        <div class="showcase-copy">
+          <p class="showcase-tag">DASHBOARD</p>
+          <h2 class="showcase-heading">Your shelf at a glance.<br/><em>Your collection in motion.</em></h2>
+          <p class="showcase-text">
+            The dashboard surfaces everything that matters the moment you open the app. Total inventory, unique expressions, open bottles, and estimated market value — all live. A timeline chart shows how your collection has grown year over year.
+          </p>
+          <ul class="showcase-bullets">
+            <li>Real-time portfolio market value vs. what you paid</li>
+            <li>Added & Finished bottle timeline going back years</li>
+            <li>Recent additions with bottle art, front and center</li>
+            <li>AI-curated tasting flight from your own collection</li>
+            <li>Infinity Bottle tracking — blend and document over time</li>
+          </ul>
+        </div>
+        <div class="showcase-phones">
+          <div class="phone-wrap">
+            <div class="phone-glow"></div>
+            <div class="phone-frame">
+              <img src="screen-dashboard.PNG" alt="Dram Diary Dashboard"/>
+            </div>
+          </div>
+          <div class="phone-wrap offset">
+            <div class="phone-frame">
+              <img src="screen-dashboard2.PNG" alt="Dram Diary Dashboard continued"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOWCASE: COLLECTION -->
+      <div class="showcase-row reverse reveal">
+        <div class="showcase-copy">
+          <p class="showcase-tag">COLLECTION</p>
+          <h2 class="showcase-heading">Every bottle.<br/><em>Every detail.</em></h2>
+          <p class="showcase-text">
+            Your collection isn't just a list — it's a record. Search, filter, and sort across every bottle you own. Each entry tracks proof, age, size, fill level, storage location, purchase price, and current market value. Open a bottle and start tracking the gain or loss in real time.
+          </p>
+          <ul class="showcase-bullets">
+            <li>Search and filter by distillery, type, rarity, status, and more</li>
+            <li>Bottle art pulled automatically from the catalog</li>
+            <li>Fill level slider — track how much is left in every open bottle</li>
+            <li>Market value and gain/loss per bottle</li>
+            <li>Tasting notes and personal ratings for every pour</li>
+            <li>Pending review badge for newly submitted bottles</li>
+          </ul>
+        </div>
+        <div class="showcase-phones">
+          <div class="phone-wrap">
+            <div class="phone-glow"></div>
+            <div class="phone-frame">
+              <img src="screen-collection.PNG" alt="Dram Diary Collection"/>
+            </div>
+          </div>
+          <div class="phone-wrap offset">
+            <div class="phone-frame">
+              <img src="screen-detail.PNG" alt="Dram Diary Bottle Detail"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOWCASE: ANALYTICS -->
+      <div class="showcase-row reveal" id="analytics">
+        <div class="showcase-copy">
+          <p class="showcase-tag">ANALYTICS</p>
+          <h2 class="showcase-heading">Data that reveals<br/><em>your palate.</em></h2>
+          <p class="showcase-text">
+            Dram Diary doesn't just store data — it surfaces patterns. See which distilleries dominate your shelf, which bottles you've held the longest, where your money is working hardest, and which open bottles you should pour through before they peak.
+          </p>
+          <ul class="showcase-bullets">
+            <li>Portfolio value: total paid, market value, total gain/loss</li>
+            <li>Price-per-ounce breakdown — find your best and worst value</li>
+            <li>Spirit type and distillery breakdown charts</li>
+            <li>Distillery loyalty rankings across your full collection</li>
+            <li>Open bottle tracker with "Drink First" alerts by days open</li>
+            <li>Community wishlist — see what fellow collectors are hunting</li>
+          </ul>
+        </div>
+        <div class="showcase-phones">
+          <div class="phone-wrap">
+            <div class="phone-glow"></div>
+            <div class="phone-frame">
+              <img src="screen-analytics1.PNG" alt="Dram Diary Analytics"/>
+            </div>
+          </div>
+          <div class="phone-wrap offset">
+            <div class="phone-frame">
+              <img src="screen-analytics2.PNG" alt="Dram Diary Analytics continued"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOWCASE: COMMUNITY -->
+      <div class="showcase-row reverse reveal">
+        <div class="showcase-copy">
+          <p class="showcase-tag">COMMUNITY</p>
+          <h2 class="showcase-heading">Rank up.<br/><em>Stand out.</em></h2>
+          <p class="showcase-text">
+            Your collector rank grows as your collection does. Earn badges, climb the leaderboard, and track your progress across 36 achievements spanning seven categories. From Newcomer to Warehouse, every milestone is earned — not bought.
+          </p>
+          <ul class="showcase-bullets">
+            <li>Collector ranks: Newcomer → Enthusiast → Collector → Curator → Warehouse</li>
+            <li>36 achievements across Collection, Loyalty, Hunting, Variety, Pours, Community, Prestige</li>
+            <li>Leaderboard — bottles and badges</li>
+            <li>Wishlist sharing with the community</li>
+            <li>Your public collector profile</li>
+          </ul>
+        </div>
+        <div class="showcase-phones">
+          <div class="phone-wrap">
+            <div class="phone-glow"></div>
+            <div class="phone-frame">
+              <img src="screen-analytics3.PNG" alt="Dram Diary Community Analytics"/>
+            </div>
+          </div>
+          <div class="phone-wrap offset">
+            <div class="phone-frame">
+              <img src="screen-community.PNG" alt="Dram Diary Community"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"><div class="divider-gem"></div></div>
+
+  <!-- BARREL PICK CALLOUT -->
+  <section class="barrel-callout">
+    <div class="barrel-card reveal">
+      <p class="barrel-eyebrow">SINGLE BARREL PICKS</p>
+      <h2 class="barrel-heading">Built for the<br/><em>barrel hunter.</em></h2>
+      <p class="barrel-text">
+        Store picks and club selections are a different category of whiskey — and Dram Diary treats them that way. Flag any bottle as a Store Pick or Club Selection, then log every piece of data that makes that barrel unique. Your pick isn't just a bottle. It's a record.
+      </p>
+      <div class="barrel-fields">
+        <span class="barrel-field">PICK TYPE</span>
+        <span class="barrel-field">STORE / CLUB NAME</span>
+        <span class="barrel-field">SELECTOR NAME</span>
+        <span class="barrel-field">BARREL NUMBER</span>
+        <span class="barrel-field">RICKHOUSE</span>
+        <span class="barrel-field">FLOOR NUMBER</span>
+        <span class="barrel-field">CHAR LEVEL</span>
+        <span class="barrel-field">BARRELED DATE</span>
+        <span class="barrel-field">BOTTLED DATE</span>
+        <span class="barrel-field">BOTTLES PRODUCED</span>
+        <span class="barrel-field">CASK NUMBER</span>
+        <span class="barrel-field">MASH BILL</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"><div class="divider-gem"></div></div>
+
+  <!-- FEATURES GRID -->
+  <section class="features">
+    <p class="section-label reveal">WHAT'S INSIDE</p>
+    <h2 class="section-title reveal">Everything a serious<br/><em>collector needs</em></h2>
+    <p class="section-body reveal">From barcode scanning to AI-curated tasting flights, Dram Diary is the only app built from the ground up for whiskey enthusiasts who take their collection seriously.</p>
+
+    <div class="features-grid">
+      <div class="feature-card reveal" style="--feature-accent:var(--gold);--feature-bg:rgba(201,168,76,0.08);--feature-border:rgba(201,168,76,0.18)">
+        <div class="feature-icon">📷</div>
+        <p class="feature-name">BARCODE SCANNER</p>
+        <p class="feature-desc">Scan any bottle to instantly pull details from our 1,300+ bottle catalog. Not there? Submit it and it's added to the community database after review.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--copper-light);--feature-bg:rgba(184,115,51,0.08);--feature-border:rgba(184,115,51,0.18)">
+        <div class="feature-icon">∞</div>
+        <p class="feature-name">INFINITY BOTTLES</p>
+        <p class="feature-desc">Create and manage infinity bottles — blends built pour by pour from your collection over time. Track every contributing bottle and document the evolution.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--sage);--feature-bg:rgba(76,148,142,0.08);--feature-border:rgba(76,148,142,0.18)">
+        <div class="feature-icon">✦</div>
+        <p class="feature-name">AI TASTING FLIGHTS</p>
+        <p class="feature-desc">Let the app curate a 3–6 bottle tasting flight from your own collection. Pick My Flight considers what you have open, your ratings, and variety — so every session is intentional.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--gold-light);--feature-bg:rgba(232,201,106,0.06);--feature-border:rgba(232,201,106,0.15)">
+        <div class="feature-icon">📈</div>
+        <p class="feature-name">PORTFOLIO VALUE</p>
+        <p class="feature-desc">Track what you paid versus current market value. Top gainers, price-per-ounce rankings, ROI percentage, and total gain or loss — updated as you go.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:#9b7fd4;--feature-bg:rgba(155,127,212,0.08);--feature-border:rgba(155,127,212,0.18)">
+        <div class="feature-icon">📝</div>
+        <p class="feature-name">TASTING NOTES</p>
+        <p class="feature-desc">Log detailed notes and personal ratings for every bottle you open. Build a searchable record of your palate over years of pours.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--copper);--feature-bg:rgba(184,115,51,0.06);--feature-border:rgba(184,115,51,0.15)">
+        <div class="feature-icon">🏆</div>
+        <p class="feature-name">ACHIEVEMENTS & RANKS</p>
+        <p class="feature-desc">36 achievements across 7 categories. Your collector rank advances from Newcomer to Warehouse as your collection, tasting notes, and community contributions grow.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"><div class="divider-gem"></div></div>
+
+  <!-- CUSTOMIZATION -->
+  <section class="customization">
+    <p class="section-label reveal">YOUR APP, YOUR WAY</p>
+    <h2 class="section-title reveal">Personalized to<br/><em>how you collect</em></h2>
+    <p class="section-body reveal">No two collectors are alike. Dram Diary lets you shape the experience to match how you actually think about your whiskey.</p>
+
+    <div class="custom-grid">
+      <div class="custom-card reveal">
+        <div class="custom-icon">📍</div>
+        <p class="custom-name">CUSTOM STORAGE LOCATIONS</p>
+        <p class="custom-desc">Define exactly where your bottles live — Home Bar, Cellar, Office, Safe Room, or anywhere you name. Filter and sort your collection by location at any time.</p>
+      </div>
+      <div class="custom-card reveal">
+        <div class="custom-icon">⚙️</div>
+        <p class="custom-name">REORDERABLE ANALYTICS CARDS</p>
+        <p class="custom-desc">Drag to reorder, show, or hide any analytics card on your dashboard. Put the insights you care about most front and center — and hide the ones you don't.</p>
+      </div>
+      <div class="custom-card reveal">
+        <div class="custom-icon">🧾</div>
+        <p class="custom-name">SUBSCRIPTION TIERS</p>
+        <p class="custom-desc">Free to get started. Upgrade to unlock the full feature set including analytics, infinity bottles, AI flights, and unlimited collection tracking for $3.99/month or $34.99/year.</p>
+      </div>
+      <div class="custom-card reveal">
+        <div class="custom-icon">👤</div>
+        <p class="custom-name">PUBLIC COLLECTOR PROFILE</p>
+        <p class="custom-desc">Share your collector rank, badge count, distillery count, and wishlist with the community. Your public profile is a snapshot of your whiskey journey.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- STATS -->
   <section class="stats">
     <div class="stats-inner">
       <div class="reveal">
-        <div class="stat-number">36+</div>
+        <div class="stat-number">1,300+</div>
+        <div class="stat-label">BOTTLES IN CATALOG</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-number">36</div>
         <div class="stat-label">ACHIEVEMENTS TO EARN</div>
       </div>
       <div class="reveal">
-        <div class="stat-number">5</div>
-        <div class="stat-label">TABS OF INSIGHTS</div>
+        <div class="stat-number">12</div>
+        <div class="stat-label">BARREL PICK DATA FIELDS</div>
       </div>
       <div class="reveal">
         <div class="stat-number">∞</div>
         <div class="stat-label">BOTTLES TO TRACK</div>
       </div>
-      <div class="reveal">
-        <div class="stat-number">1</div>
-        <div class="stat-label">APP FOR COLLECTORS</div>
-      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <p class="section-label reveal">GET STARTED</p>
+    <h2 class="hero-title reveal">Start your diary.</h2>
+    <p class="hero-tagline reveal">Track your journey, share your passion</p>
+    <div class="hero-cta-group reveal" style="opacity:1;animation:none">
+      <span class="app-badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#aaa"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 13.86 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c0 2.5 2 4 2 4"/></svg>
+        <span>
+          <span class="badge-sub">COMING SOON TO THE</span>
+          <span class="badge-main">App Store</span>
+        </span>
+      </span>
     </div>
   </section>
 
@@ -633,19 +1146,20 @@
       </div>
       <ul class="footer-links">
         <li><a href="#features">FEATURES</a></li>
+        <li><a href="#analytics">ANALYTICS</a></li>
         <li><a href="privacy.html">PRIVACY POLICY</a></li>
         <li><a href="terms.html">TERMS OF SERVICE</a></li>
         <li><a href="support.html">SUPPORT</a></li>
       </ul>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Dram Diary™. All rights reserved.</span>
+      <span>© 2026 Blanchard Digital Enterprises LLC. Dram Diary™ is a registered trademark.</span>
       <span>Crafted for collectors</span>
     </div>
   </footer>
 
   <script>
-    // Scroll-based nav styling
+    // Nav scroll styling
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 40);
@@ -659,7 +1173,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.1 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
