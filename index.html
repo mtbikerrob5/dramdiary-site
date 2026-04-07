@@ -151,25 +151,38 @@
       mix-blend-mode: lighten;
     }
 
-    .hero-title {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(3rem, 8vw, 6.5rem);
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: -1px;
-      background: linear-gradient(135deg, var(--cream) 0%, var(--gold-light) 50%, var(--cream) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .hero-title-wrap {
+      display: inline-flex;
+      align-items: flex-start;
+      justify-content: center;
+      width: 100%;
       margin-bottom: 20px;
       opacity: 0;
       animation: fadeUp 0.9s ease 0.5s forwards;
     }
 
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--cream) 0%, var(--gold-light) 50%, var(--cream) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding-bottom: 0.05em;
+      margin-bottom: 0;
+      opacity: 1;
+      animation: none;
+    }
+
     .hero-tm {
-      font-size: 0.4em;
-      vertical-align: top;
-      line-height: 1;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(0.9rem, 2vw, 1.6rem);
+      color: var(--gold-light);
+      margin-top: 0.3em;
+      margin-left: 2px;
     }
 
     .hero-tagline {
@@ -820,7 +833,9 @@
     <div class="hero-bg"></div>
     <p class="hero-eyebrow">COMING SOON TO THE APP STORE</p>
     <img class="hero-logo" src="logo.png" alt="Dram Diary Logo"/>
-    <h1 class="hero-title">Dram Diary<span class="hero-tm">™</span></h1>
+    <div class="hero-title-wrap">
+      <h1 class="hero-title">Dram Diary</h1><span class="hero-tm">™</span>
+    </div>
     <p class="hero-tagline">Track your journey, share your passion</p>
     <p class="hero-sub">THE WHISKEY COLLECTOR'S COMPANION</p>
     <div class="hero-cta-group">
