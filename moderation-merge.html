@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reject & Merge — Dram Diary</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #111; color: #f5f0e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { color: #DAA520; font-size: 22px; margin-bottom: 6px; }
+    .subtitle { color: #888; font-size: 13px; margin-bottom: 28px; }
+    .section-label { font-size: 10px; letter-spacing: 1.5px; color: #888; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
+    .bottle-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .bottle-card.pending { border-color: #DAA520; }
+    .bottle-card.selected { border-color: #4CAF50; background: rgba(76,175,80,0.06); }
+    .bottle-name { font-size: 15px; font-weight: 700; color: #f5f0e8; margin-bottom: 4px; }
+    .bottle-meta { font-size: 12px; color: #888; margin-bottom: 10px; }
+    .bottle-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+    .stat { }
+    .stat-label { font-size: 9px; letter-spacing: 1px; color: #666; font-weight: 600; }
+    .stat-value { font-size: 13px; color: #f5f0e8; font-weight: 500; }
+    .match-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .match-exact { background: rgba(229,57,53,0.2); color: #EF9A9A; border: 1px solid rgba(229,57,53,0.4); }
+    .match-similar { background: rgba(255,160,0,0.15); color: #FFD54F; border: 1px solid rgba(255,160,0,0.3); }
+    .select-btn { background: #222; border: 1px solid #444; color: #aaa; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s; }
+    .select-btn:hover { border-color: #4CAF50; color: #4CAF50; }
+    .select-btn.active { background: rgba(76,175,80,0.15); border-color: #4CAF50; color: #4CAF50; }
+    .divider { border: none; border-top: 1px solid #222; margin: 24px 0; }
+    .merge-btn { background: #4CAF50; color: #fff; border: none; padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; transition: opacity 0.15s; }
+    .merge-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .merge-btn:not(:disabled):hover { opacity: 0.9; }
+    .cancel-btn { background: transparent; color: #888; border: 1px solid #333; padding: 12px 32px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px; }
+    .cancel-btn:hover { border-color: #555; color: #aaa; }
+    .status-box { border-radius: 8px; padding: 16px; margin-bottom: 20px; font-size: 13px; display: none; }
+    .status-success { background: rgba(76,175,80,0.1); border: 1px solid #4CAF50; color: #81C784; }
+    .status-error { background: rgba(229,57,53,0.1); border: 1px solid #B43C3C; color: #EF9A9A; }
+    .backfill-preview { background: #222; border-radius: 6px; padding: 12px; margin-top: 10px; font-size: 11px; color: #888; line-height: 1.8; }
+    .backfill-preview span { color: #DAA520; font-weight: 600; }
+    .loading { text-align: center; padding: 60px; color: #888; }
+    .arrow { text-align: center; color: #555; font-size: 20px; padding: 8px 0; }
+    img.bottle-img { width: 48px; height: 72px; object-fit: contain; border-radius: 4px; background: #222; float: right; margin-left: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔀 Reject & Merge</h1>
+    <p class="subtitle">Select the existing catalog entry to merge this submission into.</p>
+
+    <div id="status" class="status-box"></div>
+    <div id="content" class="loading">Loading submission details…</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://okxuvrrcpvzchzoictsf.supabase.co';
+    const FUNCTION_BASE = `${SUPABASE_URL}/functions/v1/moderate-bottle`;
+
+    const params = new URLSearchParams(window.location.search);
+    const bottleId = params.get('id');
+    const token    = params.get('token');
+
+    let pendingBottle = null;
+    let candidates   = [];
+    let selectedId   = null;
+
+    function fmt(v, suffix = '') { return v != null && v !== '' ? v + suffix : '—'; }
+    function fmtMoney(v) { return v ? '$' + Number(v).toLocaleString() : '—'; }
+
+    async function load() {
+      if (!bottleId || !token) {
+        showError('Missing parameters. Please use the link from the moderation email.');
+        return;
+      }
+
+      // Fetch the pending submission
+      const r = await fetch(`${FUNCTION_BASE}?action=fetch&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
+      const data = await r.json();
+      if (!data.ok || !data.bottle) { showError('Could not load submission: ' + (data.error || 'Unknown error')); return; }
+      pendingBottle = data.bottle;
+
+      // Fetch merge candidates
+      const r2 = await fetch(`${FUNCTION_BASE}?action=fetch_candidates&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
+      const data2 = await r2.json();
+      candidates = data2.candidates || [];
+
+      render();
+    }
+
+    function render() {
+      const b = pendingBottle;
+      document.getElementById('content').innerHTML = `
+        <div class="section-label">Pending Submission (will be rejected)</div>
+        <div class="bottle-card pending">
+          ${b.image_url ? `<img class="bottle-img" src="${b.image_url}" alt=""/>` : ''}
+          <div class="bottle-name">${b.name || '—'}</div>
+          <div class="bottle-meta">${b.distillery || '—'} · ${b.type || '—'}</div>
+          <div class="bottle-stats">
+            <div class="stat"><div class="stat-label">PROOF</div><div class="stat-value">${fmt(b.proof)}</div></div>
+            <div class="stat"><div class="stat-label">AGE</div><div class="stat-value">${b.age_statement ? b.age_statement + 'yr' : 'NAS'}</div></div>
+            <div class="stat"><div class="stat-label">VINTAGE</div><div class="stat-value">${fmt(b.vintage_year)}</div></div>
+            <div class="stat"><div class="stat-label">UPC</div><div class="stat-value">${fmt(b.upc)}</div></div>
+            <div class="stat"><div class="stat-label">MSRP</div><div class="stat-value">${fmtMoney(b.msrp)}</div></div>
+            <div class="stat"><div class="stat-label">MARKET</div><div class="stat-value">${fmtMoney(b.market_price)}</div></div>
+          </div>
+        </div>
+
+        <div class="arrow">↓ merge into ↓</div>
+
+        <div class="section-label" style="margin-top:16px">Select Target Entry</div>
+        <div id="candidates">
+          ${candidates.length === 0
+            ? '<div style="color:#666;font-size:13px;padding:16px 0">No candidates found. Enter a bottle ID manually below.</div>'
+            : candidates.map(c => candidateCard(c)).join('')}
+        </div>
+
+        <div style="margin-top:16px">
+          <div class="section-label">Or enter bottle ID manually</div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <input id="manual-id" placeholder="Existing bottle UUID…"
+              style="flex:1;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:10px 12px;color:#f5f0e8;font-size:13px"/>
+            <button onclick="selectManual()" style="background:#333;border:1px solid #444;color:#aaa;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">Use This ID</button>
+          </div>
+        </div>
+
+        <hr class="divider"/>
+
+        <div id="backfill-preview" style="display:none">
+          <div class="section-label">Data that will be backfilled onto target</div>
+          <div class="backfill-preview" id="backfill-list"></div>
+          <div style="height:12px"></div>
+        </div>
+
+        <button class="merge-btn" id="merge-btn" disabled onclick="doMerge()">
+          🔀 Reject Submission & Merge Into Selected Entry
+        </button>
+        <button class="cancel-btn" onclick="window.close()">Cancel</button>
+      `;
+    }
+
+    function candidateCard(c) {
+      return `
+        <div class="bottle-card" id="card-${c.id}" onclick="selectCandidate('${c.id}')">
+          ${c.image_url ? `<img class="bottle-img" src="${c.image_url}" alt=""/>` : ''}
+          <div class="match-badge ${c.matchType === 'exact' ? 'match-exact' : 'match-similar'}">
+            ${c.matchType === 'exact' ? '🔴 Exact match' : '🟡 Similar name'}
+          </div>
+          <div class="bottle-name">${c.name}</div>
+          <div class="bottle-meta">${c.distillery || '—'} · ${c.type || '—'} · <span style="color:${c.status === 'approved' ? '#81C784' : '#FFD54F'}">${c.status}</span></div>
+          <div class="bottle-stats" style="margin-top:8px">
+            <div class="stat"><div class="stat-label">PROOF</div><div class="stat-value">${fmt(c.proof)}</div></div>
+            <div class="stat"><div class="stat-label">AGE</div><div class="stat-value">${c.age_statement ? c.age_statement + 'yr' : 'NAS'}</div></div>
+            <div class="stat"><div class="stat-label">UPC</div><div class="stat-value">${fmt(c.upc)}</div></div>
+            <div class="stat"><div class="stat-label">MSRP</div><div class="stat-value">${fmtMoney(c.msrp)}</div></div>
+            <div class="stat"><div class="stat-label">MARKET</div><div class="stat-value">${fmtMoney(c.market_price)}</div></div>
+          </div>
+          <div style="margin-top:10px;text-align:right">
+            <button class="select-btn" id="btn-${c.id}">Select →</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectCandidate(id) {
+      selectedId = id;
+      document.querySelectorAll('.bottle-card').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.select-btn').forEach(el => { el.classList.remove('active'); el.textContent = 'Select →'; });
+      const card = document.getElementById('card-' + id);
+      const btn  = document.getElementById('btn-' + id);
+      if (card) card.classList.add('selected');
+      if (btn)  { btn.classList.add('active'); btn.textContent = '✓ Selected'; }
+      document.getElementById('merge-btn').disabled = false;
+      updateBackfillPreview(id);
+    }
+
+    function selectManual() {
+      const id = document.getElementById('manual-id').value.trim();
+      if (!id) return;
+      selectedId = id;
+      document.querySelectorAll('.bottle-card').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.select-btn').forEach(el => { el.classList.remove('active'); el.textContent = 'Select →'; });
+      document.getElementById('merge-btn').disabled = false;
+      document.getElementById('backfill-preview').style.display = 'none';
+      showStatus('Manual ID set: ' + id, 'info');
+    }
+
+    function updateBackfillPreview(targetId) {
+      const b = pendingBottle;
+      const target = candidates.find(c => c.id === targetId);
+      if (!target) { document.getElementById('backfill-preview').style.display = 'none'; return; }
+
+      const items = [];
+      if (b.msrp && !target.msrp)               items.push(`<span>MSRP</span> → $${b.msrp}`);
+      if (b.market_price && !target.market_price) items.push(`<span>Market Price</span> → $${b.market_price}`);
+      if (b.upc && !target.upc)                  items.push(`<span>UPC</span> → ${b.upc}`);
+      if (b.image_url && !target.image_url)       items.push(`<span>Image</span> → will be copied`);
+      if (b.region && !target.region)             items.push(`<span>Region</span> → ${b.region}`);
+
+      const preview = document.getElementById('backfill-preview');
+      const list    = document.getElementById('backfill-list');
+      if (items.length === 0) {
+        list.innerHTML = 'No missing data to backfill — target entry is already complete.';
+      } else {
+        list.innerHTML = items.join('<br/>');
+      }
+      preview.style.display = 'block';
+    }
+
+    async function doMerge() {
+      if (!selectedId) return;
+      const btn = document.getElementById('merge-btn');
+      btn.disabled = true;
+      btn.textContent = 'Merging…';
+
+      try {
+        const res = await fetch(
+          `${FUNCTION_BASE}?action=merge&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}&target_id=${encodeURIComponent(selectedId)}`,
+          { method: 'POST', headers: { 'Content-Type': 'application/json' } }
+        );
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById('content').style.display = 'none';
+          showStatus(`✅ Done! Submission rejected and ${data.repointed} user bottle(s) re-pointed to the existing entry. ${data.backfilled?.length ? 'Backfilled: ' + data.backfilled.join(', ') + '.' : ''}`, 'success');
+        } else {
+          showStatus('Merge failed: ' + (data.error || 'Unknown error'), 'error');
+          btn.disabled = false;
+          btn.textContent = '🔀 Reject Submission & Merge Into Selected Entry';
+        }
+      } catch (e) {
+        showStatus('Network error: ' + e.message, 'error');
+        btn.disabled = false;
+        btn.textContent = '🔀 Reject Submission & Merge Into Selected Entry';
+      }
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status-box ' + (type === 'success' ? 'status-success' : type === 'error' ? 'status-error' : 'status-box');
+      el.style.display = 'block';
+      if (type === 'success') el.style.background = 'rgba(76,175,80,0.1)';
+    }
+
+    function showError(msg) {
+      document.getElementById('content').innerHTML = `<div style="color:#EF9A9A;padding:20px 0">${msg}</div>`;
+    }
+
+    load();
+  </script>
+</body>
+</html>
