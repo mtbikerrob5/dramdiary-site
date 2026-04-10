@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #111; color: #f5f0e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; min-height: 100vh; }
-    .container { max-width: 900px; margin: 0 auto; }
+    .container { max-width: 960px; margin: 0 auto; }
     h1 { color: #DAA520; font-size: 22px; margin-bottom: 6px; }
     .subtitle { color: #888; font-size: 13px; margin-bottom: 28px; }
     .section-label { font-size: 10px; letter-spacing: 1.5px; color: #888; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
@@ -17,7 +17,6 @@
     .bottle-name { font-size: 15px; font-weight: 700; color: #f5f0e8; margin-bottom: 4px; }
     .bottle-meta { font-size: 12px; color: #888; margin-bottom: 10px; }
     .bottle-stats { display: flex; gap: 20px; flex-wrap: wrap; }
-    .stat { }
     .stat-label { font-size: 9px; letter-spacing: 1px; color: #666; font-weight: 600; }
     .stat-value { font-size: 13px; color: #f5f0e8; font-weight: 500; }
     .match-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; letter-spacing: 0.5px; }
@@ -35,17 +34,35 @@
     .status-box { border-radius: 8px; padding: 16px; margin-bottom: 20px; font-size: 13px; display: none; }
     .status-success { background: rgba(76,175,80,0.1); border: 1px solid #4CAF50; color: #81C784; }
     .status-error { background: rgba(229,57,53,0.1); border: 1px solid #B43C3C; color: #EF9A9A; }
-    .backfill-preview { background: #222; border-radius: 6px; padding: 12px; margin-top: 10px; font-size: 11px; color: #888; line-height: 1.8; }
-    .backfill-preview span { color: #DAA520; font-weight: 600; }
     .loading { text-align: center; padding: 60px; color: #888; }
-    .arrow { text-align: center; color: #555; font-size: 20px; padding: 8px 0; }
     img.bottle-img { width: 48px; height: 72px; object-fit: contain; border-radius: 4px; background: #222; float: right; margin-left: 12px; }
+
+    /* Field merge table */
+    .field-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .field-table th { font-size: 9px; letter-spacing: 1.2px; color: #666; font-weight: 600; text-align: left; padding: 8px 10px; border-bottom: 1px solid #2a2a2a; text-transform: uppercase; }
+    .field-table td { padding: 10px; border-bottom: 1px solid #1e1e1e; vertical-align: middle; font-size: 13px; }
+    .field-table tr:last-child td { border-bottom: none; }
+    .field-table tr.has-diff { background: rgba(218,165,32,0.04); }
+    .field-table tr.has-diff:hover { background: rgba(218,165,32,0.08); }
+    .val-current { color: #888; }
+    .val-incoming { color: #f5f0e8; font-weight: 500; }
+    .val-same { color: #555; font-style: italic; }
+    .arrow { color: #444; margin: 0 6px; }
+    .diff-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: rgba(218,165,32,0.15); color: #DAA520; border: 1px solid rgba(218,165,32,0.3); letter-spacing: 0.5px; margin-left: 6px; }
+    .img-preview { width: 60px; height: 80px; object-fit: contain; border-radius: 4px; background: #222; }
+
+    /* Checkbox styling */
+    .field-checkbox { width: 18px; height: 18px; accent-color: #4CAF50; cursor: pointer; }
+    .field-checkbox:disabled { opacity: 0.3; cursor: not-allowed; }
+    td.check-cell { width: 40px; text-align: center; }
+    .select-all-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .select-all-row label { font-size: 11px; color: #888; cursor: pointer; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🔀 Reject & Merge</h1>
-    <p class="subtitle">Select the existing catalog entry to merge this submission into.</p>
+    <p class="subtitle">Select the existing catalog entry to merge into, then choose which fields to apply from the submission.</p>
 
     <div id="status" class="status-box"></div>
     <div id="content" class="loading">Loading submission details…</div>
@@ -62,23 +79,28 @@
     let pendingBottle = null;
     let candidates   = [];
     let selectedId   = null;
+    let selectedTarget = null;
 
-    function fmt(v, suffix = '') { return v != null && v !== '' ? v + suffix : '—'; }
+    function fmt(v, suffix = '') { return (v != null && v !== '') ? v + suffix : '—'; }
     function fmtMoney(v) { return v ? '$' + Number(v).toLocaleString() : '—'; }
 
-    async function load() {
-      if (!bottleId || !token) {
-        showError('Missing parameters. Please use the link from the moderation email.');
-        return;
-      }
+    const FIELDS = [
+      { key: 'distillery',    label: 'Distillery',    format: v => fmt(v) },
+      { key: 'region',        label: 'Region',         format: v => fmt(v) },
+      { key: 'upc',           label: 'UPC',            format: v => fmt(v) },
+      { key: 'msrp',          label: 'MSRP',           format: v => fmtMoney(v) },
+      { key: 'market_price',  label: 'Market Price',   format: v => fmtMoney(v) },
+      { key: 'image_url',     label: 'Image',          format: v => v ? `<img class="img-preview" src="${v}"/>` : '—', isHtml: true },
+    ];
 
-      // Fetch the pending submission
+    async function load() {
+      if (!bottleId || !token) { showError('Missing parameters.'); return; }
+
       const r = await fetch(`${FUNCTION_BASE}?action=fetch&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
       const data = await r.json();
       if (!data.ok || !data.bottle) { showError('Could not load submission: ' + (data.error || 'Unknown error')); return; }
       pendingBottle = data.bottle;
 
-      // Fetch merge candidates
       const r2 = await fetch(`${FUNCTION_BASE}?action=fetch_candidates&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
       const data2 = await r2.json();
       candidates = data2.candidates || [];
@@ -95,51 +117,68 @@
           <div class="bottle-name">${b.name || '—'}</div>
           <div class="bottle-meta">${b.distillery || '—'} · ${b.type || '—'}</div>
           <div class="bottle-stats">
-            <div class="stat"><div class="stat-label">PROOF</div><div class="stat-value">${fmt(b.proof)}</div></div>
-            <div class="stat"><div class="stat-label">AGE</div><div class="stat-value">${b.age_statement ? b.age_statement + 'yr' : 'NAS'}</div></div>
-            <div class="stat"><div class="stat-label">VINTAGE</div><div class="stat-value">${fmt(b.vintage_year)}</div></div>
-            <div class="stat"><div class="stat-label">UPC</div><div class="stat-value">${fmt(b.upc)}</div></div>
-            <div class="stat"><div class="stat-label">MSRP</div><div class="stat-value">${fmtMoney(b.msrp)}</div></div>
-            <div class="stat"><div class="stat-label">MARKET</div><div class="stat-value">${fmtMoney(b.market_price)}</div></div>
+            <div><div class="stat-label">PROOF</div><div class="stat-value">${fmt(b.proof)}</div></div>
+            <div><div class="stat-label">AGE</div><div class="stat-value">${b.age_statement ? b.age_statement + 'yr' : 'NAS'}</div></div>
+            <div><div class="stat-label">UPC</div><div class="stat-value">${fmt(b.upc)}</div></div>
+            <div><div class="stat-label">MSRP</div><div class="stat-value">${fmtMoney(b.msrp)}</div></div>
+            <div><div class="stat-label">MARKET</div><div class="stat-value">${fmtMoney(b.market_price)}</div></div>
+            <div><div class="stat-label">REGION</div><div class="stat-value">${fmt(b.region)}</div></div>
           </div>
         </div>
 
-        <div class="arrow">↓ merge into ↓</div>
+        <div style="margin-top:24px">
+          <div class="section-label">Select Target Entry</div>
+          <div id="candidates">
+            ${candidates.length === 0
+              ? '<div style="color:#666;font-size:13px;padding:16px 0">No candidates found. Enter a bottle ID manually below.</div>'
+              : candidates.map(c => candidateCard(c)).join('')}
+          </div>
 
-        <div class="section-label" style="margin-top:16px">Select Target Entry</div>
-        <div id="candidates">
-          ${candidates.length === 0
-            ? '<div style="color:#666;font-size:13px;padding:16px 0">No candidates found. Enter a bottle ID manually below.</div>'
-            : candidates.map(c => candidateCard(c)).join('')}
-        </div>
-
-        <div style="margin-top:16px">
-          <div class="section-label">Or enter bottle ID manually</div>
-          <div style="display:flex;gap:10px;margin-top:6px">
-            <input id="manual-id" placeholder="Existing bottle UUID…"
-              style="flex:1;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:10px 12px;color:#f5f0e8;font-size:13px"/>
-            <button onclick="selectManual()" style="background:#333;border:1px solid #444;color:#aaa;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">Use This ID</button>
+          <div style="margin-top:16px">
+            <div class="section-label">Or enter bottle ID manually</div>
+            <div style="display:flex;gap:10px;margin-top:6px">
+              <input id="manual-id" placeholder="Existing bottle UUID…"
+                style="flex:1;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:10px 12px;color:#f5f0e8;font-size:13px"/>
+              <button onclick="selectManual()" style="background:#333;border:1px solid #444;color:#aaa;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">Use This ID</button>
+            </div>
           </div>
         </div>
 
-        <hr class="divider"/>
-
-        <div id="backfill-preview" style="display:none">
-          <div class="section-label">Data that will be backfilled onto target</div>
-          <div class="backfill-preview" id="backfill-list"></div>
-          <div style="height:12px"></div>
+        <div id="field-selector" style="display:none;margin-top:28px">
+          <hr class="divider" style="margin-top:0"/>
+          <div class="section-label">Choose Fields to Apply</div>
+          <p style="color:#888;font-size:12px;margin-bottom:14px">
+            Check the fields you want to copy from the submission onto the existing catalog entry. Unchecked fields will not be changed.
+          </p>
+          <div class="select-all-row">
+            <input type="checkbox" id="select-all" class="field-checkbox" onchange="toggleAll(this.checked)"/>
+            <label for="select-all">Select / deselect all</label>
+          </div>
+          <table class="field-table">
+            <thead>
+              <tr>
+                <th class="check-cell">Apply</th>
+                <th>Field</th>
+                <th>Current Value (target)</th>
+                <th>Incoming Value (submission)</th>
+              </tr>
+            </thead>
+            <tbody id="field-rows"></tbody>
+          </table>
         </div>
 
-        <button class="merge-btn" id="merge-btn" disabled onclick="doMerge()">
-          🔀 Reject Submission & Merge Into Selected Entry
-        </button>
-        <button class="cancel-btn" onclick="window.close()">Cancel</button>
+        <div id="action-area" style="display:none;margin-top:20px">
+          <button class="merge-btn" id="merge-btn" onclick="doMerge()">
+            🔀 Reject Submission & Merge Selected Fields
+          </button>
+          <button class="cancel-btn" onclick="window.close()">Cancel</button>
+        </div>
       `;
     }
 
     function candidateCard(c) {
       return `
-        <div class="bottle-card" id="card-${c.id}" onclick="selectCandidate('${c.id}')">
+        <div class="bottle-card" id="card-${c.id}" onclick="selectCandidate('${c.id}', ${JSON.stringify(c).replace(/"/g, '&quot;')})">
           ${c.image_url ? `<img class="bottle-img" src="${c.image_url}" alt=""/>` : ''}
           <div class="match-badge ${c.matchType === 'exact' ? 'match-exact' : 'match-similar'}">
             ${c.matchType === 'exact' ? '🔴 Exact match' : '🟡 Similar name'}
@@ -147,66 +186,98 @@
           <div class="bottle-name">${c.name}</div>
           <div class="bottle-meta">${c.distillery || '—'} · ${c.type || '—'} · <span style="color:${c.status === 'approved' ? '#81C784' : '#FFD54F'}">${c.status}</span></div>
           <div class="bottle-stats" style="margin-top:8px">
-            <div class="stat"><div class="stat-label">PROOF</div><div class="stat-value">${fmt(c.proof)}</div></div>
-            <div class="stat"><div class="stat-label">AGE</div><div class="stat-value">${c.age_statement ? c.age_statement + 'yr' : 'NAS'}</div></div>
-            <div class="stat"><div class="stat-label">UPC</div><div class="stat-value">${fmt(c.upc)}</div></div>
-            <div class="stat"><div class="stat-label">MSRP</div><div class="stat-value">${fmtMoney(c.msrp)}</div></div>
-            <div class="stat"><div class="stat-label">MARKET</div><div class="stat-value">${fmtMoney(c.market_price)}</div></div>
+            <div><div class="stat-label">PROOF</div><div class="stat-value">${fmt(c.proof)}</div></div>
+            <div><div class="stat-label">AGE</div><div class="stat-value">${c.age_statement ? c.age_statement + 'yr' : 'NAS'}</div></div>
+            <div><div class="stat-label">UPC</div><div class="stat-value">${fmt(c.upc)}</div></div>
+            <div><div class="stat-label">MSRP</div><div class="stat-value">${fmtMoney(c.msrp)}</div></div>
+            <div><div class="stat-label">REGION</div><div class="stat-value">${fmt(c.region)}</div></div>
           </div>
           <div style="margin-top:10px;text-align:right">
             <button class="select-btn" id="btn-${c.id}">Select →</button>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
-    function selectCandidate(id) {
+    function selectCandidate(id, target) {
       selectedId = id;
+      selectedTarget = typeof target === 'string' ? JSON.parse(target.replace(/&quot;/g, '"')) : target;
       document.querySelectorAll('.bottle-card').forEach(el => el.classList.remove('selected'));
       document.querySelectorAll('.select-btn').forEach(el => { el.classList.remove('active'); el.textContent = 'Select →'; });
       const card = document.getElementById('card-' + id);
       const btn  = document.getElementById('btn-' + id);
       if (card) card.classList.add('selected');
       if (btn)  { btn.classList.add('active'); btn.textContent = '✓ Selected'; }
-      document.getElementById('merge-btn').disabled = false;
-      updateBackfillPreview(id);
+      buildFieldTable(selectedTarget);
     }
 
     function selectManual() {
       const id = document.getElementById('manual-id').value.trim();
       if (!id) return;
       selectedId = id;
+      selectedTarget = null;
       document.querySelectorAll('.bottle-card').forEach(el => el.classList.remove('selected'));
       document.querySelectorAll('.select-btn').forEach(el => { el.classList.remove('active'); el.textContent = 'Select →'; });
-      document.getElementById('merge-btn').disabled = false;
-      document.getElementById('backfill-preview').style.display = 'none';
-      showStatus('Manual ID set: ' + id, 'info');
+      document.getElementById('field-selector').style.display = 'none';
+      document.getElementById('action-area').style.display = 'block';
     }
 
-    function updateBackfillPreview(targetId) {
+    function buildFieldTable(target) {
       const b = pendingBottle;
-      const target = candidates.find(c => c.id === targetId);
-      if (!target) { document.getElementById('backfill-preview').style.display = 'none'; return; }
+      const tbody = document.getElementById('field-rows');
+      let rows = '';
+      let anyChecked = false;
 
-      const items = [];
-      if (b.msrp && !target.msrp)               items.push(`<span>MSRP</span> → $${b.msrp}`);
-      if (b.market_price && !target.market_price) items.push(`<span>Market Price</span> → $${b.market_price}`);
-      if (b.upc && !target.upc)                  items.push(`<span>UPC</span> → ${b.upc}`);
-      if (b.image_url && !target.image_url)       items.push(`<span>Image</span> → will be copied`);
-      if (b.region && !target.region)             items.push(`<span>Region</span> → ${b.region}`);
+      FIELDS.forEach(f => {
+        const incoming = b[f.key];
+        const current  = target ? target[f.key] : null;
+        const hasDiff  = incoming && incoming !== current;
+        const defaultChecked = hasDiff; // pre-check fields that differ
+        if (defaultChecked) anyChecked = true;
 
-      const preview = document.getElementById('backfill-preview');
-      const list    = document.getElementById('backfill-list');
-      if (items.length === 0) {
-        list.innerHTML = 'No missing data to backfill — target entry is already complete.';
-      } else {
-        list.innerHTML = items.join('<br/>');
-      }
-      preview.style.display = 'block';
+        const currentDisplay  = f.isHtml ? f.format(current)  : `<span class="${current ? 'val-current' : 'val-same'}">${f.format(current)}</span>`;
+        const incomingDisplay = f.isHtml ? f.format(incoming) : `<span class="${incoming ? 'val-incoming' : 'val-same'}">${f.format(incoming)}</span>`;
+
+        rows += `
+          <tr class="${hasDiff ? 'has-diff' : ''}">
+            <td class="check-cell">
+              <input type="checkbox" class="field-checkbox field-cb" id="cb-${f.key}" data-key="${f.key}"
+                ${defaultChecked ? 'checked' : ''}
+                ${!incoming ? 'disabled' : ''}/>
+            </td>
+            <td>
+              <label for="cb-${f.key}" style="cursor:${incoming ? 'pointer' : 'default'};color:${incoming ? '#f5f0e8' : '#555'};font-weight:600;font-size:12px">
+                ${f.label}
+                ${hasDiff ? '<span class="diff-badge">DIFFERS</span>' : ''}
+              </label>
+            </td>
+            <td>${currentDisplay}</td>
+            <td>${incomingDisplay}</td>
+          </tr>`;
+      });
+
+      tbody.innerHTML = rows;
+      document.getElementById('select-all').checked = anyChecked;
+      document.getElementById('field-selector').style.display = 'block';
+      document.getElementById('action-area').style.display = 'block';
+    }
+
+    function toggleAll(checked) {
+      document.querySelectorAll('.field-cb:not(:disabled)').forEach(cb => cb.checked = checked);
+    }
+
+    function getSelectedFields() {
+      const selected = {};
+      document.querySelectorAll('.field-cb:checked').forEach(cb => {
+        const key = cb.dataset.key;
+        const val = pendingBottle[key];
+        if (val != null && val !== '') selected[key] = val;
+      });
+      return selected;
     }
 
     async function doMerge() {
       if (!selectedId) return;
+      const selectedFields = getSelectedFields();
       const btn = document.getElementById('merge-btn');
       btn.disabled = true;
       btn.textContent = 'Merging…';
@@ -214,30 +285,38 @@
       try {
         const res = await fetch(
           `${FUNCTION_BASE}?action=merge&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}&target_id=${encodeURIComponent(selectedId)}`,
-          { method: 'POST', headers: { 'Content-Type': 'application/json' } }
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: selectedFields }),
+          }
         );
         const data = await res.json();
         if (data.ok) {
           document.getElementById('content').style.display = 'none';
-          showStatus(`✅ Done! Submission rejected and ${data.repointed} user bottle(s) re-pointed to the existing entry. ${data.backfilled?.length ? 'Backfilled: ' + data.backfilled.join(', ') + '.' : ''}`, 'success');
+          const applied = Object.keys(selectedFields);
+          showStatus(
+            `✅ Done! Submission rejected and ${data.repointed} user bottle(s) re-pointed to the existing entry.` +
+            (applied.length ? ` Applied: ${applied.join(', ')}.` : ' No fields applied.'),
+            'success'
+          );
         } else {
           showStatus('Merge failed: ' + (data.error || 'Unknown error'), 'error');
           btn.disabled = false;
-          btn.textContent = '🔀 Reject Submission & Merge Into Selected Entry';
+          btn.textContent = '🔀 Reject Submission & Merge Selected Fields';
         }
       } catch (e) {
         showStatus('Network error: ' + e.message, 'error');
         btn.disabled = false;
-        btn.textContent = '🔀 Reject Submission & Merge Into Selected Entry';
+        btn.textContent = '🔀 Reject Submission & Merge Selected Fields';
       }
     }
 
     function showStatus(msg, type) {
       const el = document.getElementById('status');
       el.textContent = msg;
-      el.className = 'status-box ' + (type === 'success' ? 'status-success' : type === 'error' ? 'status-error' : 'status-box');
+      el.className = 'status-box ' + (type === 'success' ? 'status-success' : 'status-error');
       el.style.display = 'block';
-      if (type === 'success') el.style.background = 'rgba(76,175,80,0.1)';
     }
 
     function showError(msg) {
