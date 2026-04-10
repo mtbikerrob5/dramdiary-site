@@ -237,6 +237,7 @@
           document.getElementById('f-market').value      = bottle.market_price  || '';
           document.getElementById('f-region').value      = bottle.region        || '';
           document.getElementById('f-upc').value         = bottle.upc           || '';
+          document.getElementById('f-rarity').value      = bottle.rarity        || 'common';
 
           document.getElementById('page-title').textContent    = 'Review Bottle Submission';
           document.getElementById('page-subtitle').textContent = 'Edit the details below as needed, then approve or reject.';
@@ -255,11 +256,12 @@
           document.getElementById('f-market').value      = bottle.market_price  || '';
           document.getElementById('f-region').value      = bottle.region        || '';
           document.getElementById('f-upc').value         = bottle.upc           || '';
+          document.getElementById('f-rarity').value      = bottle.rarity        || 'common';
 
           const fieldMap = {
             name: 'f-name', distillery: 'f-distillery', type: 'f-type',
             proof: 'f-proof', age_statement: 'f-age', msrp: 'f-srp',
-            market_price: 'f-market', region: 'f-region', upc: 'f-upc',
+            market_price: 'f-market', region: 'f-region', upc: 'f-upc', rarity: 'f-rarity',
           };
           const highlightId = fieldMap[fieldName];
           if (highlightId) {
@@ -308,6 +310,7 @@
         market_price: parseFloat(document.getElementById('f-market').value)|| null,
         region:       document.getElementById('f-region').value.trim()     || null,
         upc:          document.getElementById('f-upc').value.trim()        || null,
+        rarity:       document.getElementById('f-rarity').value                || null,
       };
 
       try {
