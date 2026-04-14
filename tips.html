@@ -514,13 +514,93 @@
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
       .tip-row, .tip-row.reverse, .tip-row.wide-phones, .tip-row.reverse.wide-phones {
         grid-template-columns: 1fr;
+        gap: 28px;
       }
       .tip-row.reverse .tip-phone { order: 0; }
-      .tip-phone { max-width: 240px; margin: 0 auto; }
+      .tip-phone { max-width: 280px; margin: 0 auto; }
+      .tip-phones-pair { max-width: 360px; margin: 0 auto; }
+      .tip-phones-triple { max-width: 480px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+      .tip-phones-triple .tip-phone-frame { flex: 0 0 45%; }
+      .toc { gap: 8px; }
+      .toc-item { font-size: 9px; padding: 6px 12px; }
+      .tip-number { font-size: 2.2rem; }
+      .tip-callout { font-size: 14px; padding: 10px 14px; }
+      .tip-card { padding: 18px 20px; gap: 14px; }
+      .section { margin-bottom: 72px; }
+      .section-divider { margin: 0 0 72px; }
       footer { padding: 48px 24px 32px; }
       .footer-inner { flex-direction: column; gap: 24px; }
+    }
+
+    /* ── HAMBURGER MENU ── */
+    .nav-hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 5px;
+      padding: 0;
+      z-index: 102;
+      transition: border-color 0.2s;
+    }
+    .nav-hamburger:hover { border-color: var(--gold); }
+    .nav-hamburger span {
+      display: block;
+      width: 18px;
+      height: 1.5px;
+      background: var(--cream-mid);
+      border-radius: 1px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(20,20,20,0.97);
+      backdrop-filter: blur(16px);
+      z-index: 101;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-menu.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .mobile-menu a {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: var(--cream-mid);
+      text-decoration: none;
+      padding: 18px 0;
+      transition: color 0.2s;
+      display: block;
+      text-align: center;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+      margin: 4px auto;
     }
   </style>
 </head>
@@ -537,7 +617,26 @@
       <li><a href="#profile">PROFILE</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/" onclick="closeMobileMenu()">HOME</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#dashboard" onclick="closeMobileMenu()">DASHBOARD</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#collection" onclick="closeMobileMenu()">COLLECTION</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#scan" onclick="closeMobileMenu()">SCAN</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#flight" onclick="closeMobileMenu()">PICK MY FLIGHT</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#profile" onclick="closeMobileMenu()">PROFILE</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+  </div>
 
   <!-- HERO -->
   <section class="page-hero">
@@ -1134,6 +1233,18 @@
       const isOpen = item.classList.contains('open');
       document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
       if (!isOpen) item.classList.add('open');
+    }
+
+    // Mobile menu
+    function toggleMobileMenu() {
+      document.getElementById('hamburger').classList.toggle('open');
+      document.getElementById('mobileMenu').classList.toggle('open');
+      document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+    }
+    function closeMobileMenu() {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
     }
   </script>
 </body>

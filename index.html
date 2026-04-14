@@ -806,11 +806,80 @@
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
       .features-grid { grid-template-columns: 1fr; }
       footer { padding: 48px 24px 32px; }
       .footer-inner { flex-direction: column; gap: 24px; }
       .showcase-phones { gap: 10px; }
       .phone-frame { width: 140px; border-radius: 28px; }
+    }
+
+    /* ── HAMBURGER MENU ── */
+    .nav-hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 5px;
+      padding: 0;
+      z-index: 102;
+      transition: border-color 0.2s;
+    }
+    .nav-hamburger:hover { border-color: var(--gold); }
+    .nav-hamburger span {
+      display: block;
+      width: 18px;
+      height: 1.5px;
+      background: var(--cream-mid);
+      border-radius: 1px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(20,20,20,0.97);
+      backdrop-filter: blur(16px);
+      z-index: 101;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-menu.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .mobile-menu a {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: var(--cream-mid);
+      text-decoration: none;
+      padding: 18px 0;
+      transition: color 0.2s;
+      display: block;
+      text-align: center;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+      margin: 4px auto;
     }
   </style>
 </head>
@@ -827,7 +896,24 @@
       <li><a href="terms.html">TERMS</a></li>
       <li><a href="support.html">SUPPORT</a></li>
     </ul>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features" onclick="closeMobileMenu()">FEATURES</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="#analytics" onclick="closeMobileMenu()">ANALYTICS</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="tips.html">TIPS & TRICKS</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="privacy.html">PRIVACY POLICY</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="terms.html">TERMS OF SERVICE</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="support.html">SUPPORT</a>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
@@ -1178,6 +1264,18 @@
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Mobile menu
+    function toggleMobileMenu() {
+      document.getElementById('hamburger').classList.toggle('open');
+      document.getElementById('mobileMenu').classList.toggle('open');
+      document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+    }
+    function closeMobileMenu() {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
   </script>
 </body>
 </html>
