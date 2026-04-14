@@ -58,7 +58,7 @@
     }
 
     /* ── NAV ── */
-    nav {
+    #nav {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
@@ -70,7 +70,7 @@
       border-bottom: 1px solid transparent;
       transition: border-color 0.3s, background 0.3s;
     }
-    nav.scrolled {
+    #nav.scrolled {
       background: rgba(26,26,26,0.97);
       border-bottom-color: var(--border);
       backdrop-filter: blur(12px);
@@ -512,7 +512,7 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      nav { padding: 16px 24px; }
+      #nav { padding: 16px 24px; }
       .nav-links { display: none; }
       .nav-hamburger { display: flex; }
       .tip-row, .tip-row.reverse, .tip-row.wide-phones, .tip-row.reverse.wide-phones {
