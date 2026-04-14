@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tips & Tricks — Dram Diary™</title>
+  <meta name="description" content="Get the most out of Dram Diary. Hidden features, pro tips, and a complete guide to every screen."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --gold-dim: #8B6914;
+      --gold-faint: rgba(201,168,76,0.08);
+      --copper: #B87333;
+      --copper-light: #D4956A;
+      --bg-deep: #1a1a1a;
+      --bg: #262626;
+      --bg-elevated: #2e2e2e;
+      --bg-card: #323232;
+      --border: rgba(201,168,76,0.18);
+      --border-faint: rgba(201,168,76,0.08);
+      --cream: #F5EDD6;
+      --cream-mid: #C8B89A;
+      --cream-dim: #7A6E5F;
+      --sage: #4c948e;
+      --sage-light: #6ab4ae;
+      --slate: #2e4057;
+      --slate-light: #4a6080;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--cream);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: linear-gradient(to bottom, rgba(26,26,26,0.98), transparent);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(26,26,26,0.97);
+      border-bottom-color: var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--cream-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    .page-hero {
+      padding: 140px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,168,76,0.07) 0%, transparent 70%);
+    }
+    .page-hero::after {
+      content: '';
+      position: absolute;
+      left: 10%; right: 10%;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    }
+    .hero-eyebrow {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      background: linear-gradient(135deg, var(--cream) 0%, var(--gold-light) 50%, var(--cream) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+    .hero-sub {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: var(--cream-mid);
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    /* ── TOC ── */
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .toc-item {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--cream-mid);
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .toc-item:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-faint);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 24px 120px;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      margin-bottom: 100px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      color: var(--cream);
+    }
+    .section-label {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    /* ── TIP + SCREENSHOT LAYOUT ── */
+    .tip-row {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 48px;
+      align-items: start;
+      margin-bottom: 56px;
+    }
+    .tip-row.reverse {
+      grid-template-columns: 220px 1fr;
+    }
+    .tip-row.reverse .tip-phone { order: -1; }
+
+    .tip-content {}
+    .tip-number {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--gold-dim);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .tip-title {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 12px;
+    }
+    .tip-body {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 17px;
+      color: var(--cream-dim);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .tip-callout {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--gold-faint);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 15px;
+      color: var(--cream-mid);
+      line-height: 1.6;
+    }
+    .tip-callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+    .tip-phone {
+      position: relative;
+    }
+    .tip-phone-frame {
+      border-radius: 32px;
+      border: 1.5px solid rgba(201,168,76,0.25);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.4),
+        0 20px 50px rgba(0,0,0,0.5),
+        0 0 30px rgba(201,168,76,0.05);
+    }
+    .tip-phone-frame img {
+      width: 100%;
+      display: block;
+    }
+    .tip-phone-glow {
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Two phones side by side */
+    .tip-phones-pair {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .tip-phones-pair .tip-phone-frame {
+      flex: 1;
+    }
+    .tip-phones-pair .tip-phone-frame.offset {
+      margin-top: 24px;
+    }
+
+    /* ── TIPS LIST (no screenshot) ── */
+    .tips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .tip-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-faint);
+      border-radius: 12px;
+      padding: 24px 28px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .tip-card:hover {
+      border-color: var(--border);
+      background: var(--bg-card);
+    }
+    .tip-card-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .tip-card-title {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 6px;
+    }
+    .tip-card-body {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      color: var(--cream-dim);
+      line-height: 1.65;
+    }
+
+    /* ── FAQ ── */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .faq-item {
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.2s;
+    }
+    .faq-question:hover { background: var(--bg-card); }
+    .faq-question-text {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1.4;
+    }
+    .faq-chevron {
+      font-size: 12px;
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-left: 16px;
+      transition: transform 0.25s;
+    }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    .faq-item.open .faq-answer { max-height: 400px; }
+    .faq-answer-inner {
+      padding: 0 28px 22px;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      color: var(--cream-dim);
+      line-height: 1.75;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 0 0 100px;
+    }
+    .section-divider::before, .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+    }
+    .section-divider::before { background: linear-gradient(to right, transparent, var(--border)); }
+    .section-divider::after  { background: linear-gradient(to left, transparent, var(--border)); }
+    .divider-gem {
+      width: 8px; height: 8px;
+      background: var(--gold-dim);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 60px 48px 40px;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    .footer-brand {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .footer-tagline {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--cream-dim);
+    }
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--cream-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 40px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(201,168,76,0.08);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--cream-dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .tip-row, .tip-row.reverse {
+        grid-template-columns: 1fr;
+      }
+      .tip-row.reverse .tip-phone { order: 0; }
+      .tip-phone { max-width: 240px; margin: 0 auto; }
+      footer { padding: 48px 24px 32px; }
+      .footer-inner { flex-direction: column; gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <a href="/" class="nav-logo">DRAM DIARY™</a>
+    <ul class="nav-links">
+      <li><a href="/">HOME</a></li>
+      <li><a href="#dashboard">DASHBOARD</a></li>
+      <li><a href="#collection">COLLECTION</a></li>
+      <li><a href="#scan">SCAN</a></li>
+      <li><a href="#flight">PICK MY FLIGHT</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="page-hero">
+    <p class="hero-eyebrow reveal">TIPS & TRICKS</p>
+    <h1 class="hero-title reveal">Get the most out of<br/>Dram Diary</h1>
+    <p class="hero-sub reveal">Hidden features, pro tips, and a complete walkthrough of every screen — so nothing goes undiscovered.</p>
+    <nav class="toc reveal">
+      <a href="#dashboard" class="toc-item">DASHBOARD</a>
+      <a href="#collection" class="toc-item">COLLECTION</a>
+      <a href="#scan" class="toc-item">SCANNING</a>
+      <a href="#bottle-detail" class="toc-item">BOTTLE DETAIL</a>
+      <a href="#edit" class="toc-item">EDIT ENTRY</a>
+      <a href="#flight" class="toc-item">PICK MY FLIGHT</a>
+      <a href="#faq" class="toc-item">FAQ</a>
+    </nav>
+  </section>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <section class="section reveal" id="dashboard">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2)">📊</div>
+        <div>
+          <p class="section-label">01 — DASHBOARD</p>
+          <h2 class="section-title">Your collection at a glance</h2>
+        </div>
+      </div>
+
+      <div class="tip-row">
+        <div class="tip-content">
+          <div class="tip-number">01</div>
+          <p class="tip-title">TAP MARKET VALUE TO HIDE IT</p>
+          <p class="tip-body">The Market Value card on your dashboard is interactive. Tap it to toggle the value between visible and hidden — handy when you're showing your collection to someone but don't want to flash the dollar amount. The value stays hidden until you tap again.</p>
+          <div class="tip-callout">
+            <span class="tip-callout-icon">💡</span>
+            You can also switch between Market Value and SRP using the Market / SRP toggle below the number — whichever reflects your collection's value more accurately.
+          </div>
+        </div>
+        <div class="tip-phone">
+          <div class="tip-phone-glow"></div>
+          <div class="tip-phones-pair">
+            <div class="tip-phone-frame">
+              <img src="screen-dashboard-shown.png" alt="Dashboard with market value shown"/>
+            </div>
+            <div class="tip-phone-frame offset">
+              <img src="screen-dashboard-hidden.png" alt="Dashboard with market value hidden"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <span class="tip-card-icon">📈</span>
+          <div>
+            <p class="tip-card-title">TOUCH THE CHART FOR DETAILS</p>
+            <p class="tip-card-body">The Added & Finished chart is interactive. Touch and drag across it to see exact bottle counts for each year. Use the Added / Finished / Both toggle above the chart to focus on what matters to you.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">➕</span>
+          <div>
+            <p class="tip-card-title">ADD A BOTTLE FROM ANYWHERE</p>
+            <p class="tip-card-body">The gold "+ ADD BOTTLE" button in the top right is always available no matter which tab you're on. Tap it to jump straight to the Add Bottle form without switching tabs.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">♾️</span>
+          <div>
+            <p class="tip-card-title">CREATE AN INFINITY BOTTLE FROM THE DASHBOARD</p>
+            <p class="tip-card-body">Scroll down to the Infinity Bottles section on your dashboard. Tap "+ NEW" in the header to start a new infinity bottle blend without leaving the dashboard.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><div class="divider-gem"></div></div>
+
+    <!-- ── COLLECTION ── -->
+    <section class="section reveal" id="collection">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(76,148,142,0.1);border:1px solid rgba(76,148,142,0.2)">🍾</div>
+        <div>
+          <p class="section-label">02 — COLLECTION</p>
+          <h2 class="section-title">Find exactly what you're looking for</h2>
+        </div>
+      </div>
+
+      <div class="tip-row reverse">
+        <div class="tip-content">
+          <div class="tip-number">02</div>
+          <p class="tip-title">FILTERS ARE POWERFUL — USE THEM</p>
+          <p class="tip-body">The Filter button in your collection lets you narrow by Status (Open/Sealed), Rarity tier, Pick Type, Spirit Type, and Distillery. Multiple filters can be active at once. The button shows the count of active filters so you always know what's applied.</p>
+          <div class="tip-callout">
+            <span class="tip-callout-icon">💡</span>
+            Try filtering to "Rare + Open" to see exactly which allocated or rare bottles you currently have open — great for planning a tasting.
+          </div>
+        </div>
+        <div class="tip-phone">
+          <div class="tip-phone-glow"></div>
+          <div class="tip-phone-frame">
+            <img src="screen-filters.png" alt="Collection filters"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <span class="tip-card-icon">🔍</span>
+          <div>
+            <p class="tip-card-title">SEARCH WITH THE ✕ BUTTON</p>
+            <p class="tip-card-body">Type in the search bar to filter your collection by name. When you have text in the search field, a ✕ button appears on the right — tap it to instantly clear the search without backspacing.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">🔤</span>
+          <div>
+            <p class="tip-card-title">SORT ON THE FLY</p>
+            <p class="tip-card-body">Tap the sort button (A–Z by default) to cycle through sorting options: Name, Rating, Market Value, and Recently Added. Your sort preference is remembered as you browse.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">🃏</span>
+          <div>
+            <p class="tip-card-title">CUSTOMIZE YOUR BOTTLE CARDS</p>
+            <p class="tip-card-body">Tap "CARD VIEW" to choose which fields appear on each bottle card in your list. Pick up to 6 fields from options like Market Value, Age, Location, Rating, and more. Proof, size, and rating are always shown.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">↩️</span>
+          <div>
+            <p class="tip-card-title">BACK BUTTON REMEMBERS YOUR SCROLL POSITION</p>
+            <p class="tip-card-body">When you open a bottle detail and tap the back arrow, the collection list returns to exactly where you were. No more scrolling back down to find your place.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><div class="divider-gem"></div></div>
+
+    <!-- ── SCAN ── -->
+    <section class="section reveal" id="scan">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(184,115,51,0.1);border:1px solid rgba(184,115,51,0.2)">📷</div>
+        <div>
+          <p class="section-label">03 — SCANNING</p>
+          <h2 class="section-title">Scan smarter, not harder</h2>
+        </div>
+      </div>
+
+      <div class="tip-row">
+        <div class="tip-content">
+          <div class="tip-number">03</div>
+          <p class="tip-title">MULTIPLE MATCHES? PICK YOURS</p>
+          <p class="tip-body">Some barcodes are shared across multiple releases of the same expression — like different annual batches of Booker's. When this happens, Dram Diary shows you every matching bottle so you can select the exact one you have. Scroll the list to find your release, then tap it.</p>
+          <div class="tip-callout">
+            <span class="tip-callout-icon">💡</span>
+            Don't see your bottle in the list? Tap "Add as different bottle" to enter it manually. You can submit the correct barcode for the catalog at the same time.
+          </div>
+        </div>
+        <div class="tip-phone">
+          <div class="tip-phone-glow"></div>
+          <div class="tip-phone-frame">
+            <img src="screen-scan-multi.png" alt="Multiple scan matches"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <span class="tip-card-icon">🔄</span>
+          <div>
+            <p class="tip-card-title">WRONG DATA? REFRESH FROM API</p>
+            <p class="tip-card-body">After a scan, if the data shown looks wrong, tap "Refresh from API →" to bypass the cache and pull fresh data directly from the source. Useful if a bottle's info was recently updated in the catalog.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">❤️</span>
+          <div>
+            <p class="tip-card-title">ADD TO WISHLIST WHILE SCANNING</p>
+            <p class="tip-card-body">See a bottle you want to hunt down? After scanning it, tap "Add to Wishlist" instead of Add to Collection. You can set a priority level, max price you'd pay, and notes — all without adding it to your collection yet.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">📝</span>
+          <div>
+            <p class="tip-card-title">SUBMIT MISSING BOTTLES</p>
+            <p class="tip-card-body">If a scan comes back with no match, you'll land on the "Not Found" screen. Tap "Add to Collection" and fill in the details — your submission goes into our review queue and gets added to the catalog for everyone once approved.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><div class="divider-gem"></div></div>
+
+    <!-- ── BOTTLE DETAIL ── -->
+    <section class="section reveal" id="bottle-detail">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(155,127,212,0.1);border:1px solid rgba(155,127,212,0.2)">🏷️</div>
+        <div>
+          <p class="section-label">04 — BOTTLE DETAIL</p>
+          <h2 class="section-title">Everything about your bottle</h2>
+        </div>
+      </div>
+
+      <div class="tip-row reverse">
+        <div class="tip-content">
+          <div class="tip-number">04</div>
+          <p class="tip-title">GAIN, RETURN, AND MARKET VALUE EXPLAINED</p>
+          <p class="tip-body">Each bottle detail shows four financial fields. <strong>Paid</strong> is what you spent. <strong>Est. Mkt</strong> is the current estimated secondary market value. <strong>Gain</strong> is the dollar difference. <strong>Return</strong> is the percentage gain relative to what you paid — only shown when you have a paid price entered.</p>
+          <div class="tip-callout">
+            <span class="tip-callout-icon">💡</span>
+            Market values come from the catalog. If a bottle's value is missing or outdated, you can update it in Edit Entry — your entry goes into the review queue to help improve the catalog for everyone.
+          </div>
+        </div>
+        <div class="tip-phone">
+          <div class="tip-phone-glow"></div>
+          <div class="tip-phones-pair">
+            <div class="tip-phone-frame">
+              <img src="screen-bottle-detail1.png" alt="Bottle detail with photo"/>
+            </div>
+            <div class="tip-phone-frame offset">
+              <img src="screen-bottle-detail2.png" alt="Bottle detail stats"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <span class="tip-card-icon">📸</span>
+          <div>
+            <p class="tip-card-title">ADD YOUR OWN PHOTO</p>
+            <p class="tip-card-body">Tap "CHANGE PHOTO" on any bottle detail to replace the catalog image with your own. Perfect for store picks, single barrels, or any bottle you want to personalize. Your photo is saved privately to your collection.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">➕</span>
+          <div>
+            <p class="tip-card-title">ADD ANOTHER BOTTLE OF THE SAME EXPRESSION</p>
+            <p class="tip-card-body">Tap "+ ANOTHER" in the bottle header to quickly add a second copy of the same bottle — without re-entering all the details. Great for multiples of the same release.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">⚠️</span>
+          <div>
+            <p class="tip-card-title">REPORT WRONG CATALOG DATA</p>
+            <p class="tip-card-body">Scroll to the bottom of any bottle detail and tap "REPORT AN ISSUE WITH THIS BOTTLE" to flag incorrect proof, age, name, image, SRP, or market price. Your report goes directly to the admin queue for review.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><div class="divider-gem"></div></div>
+
+    <!-- ── EDIT ENTRY ── -->
+    <section class="section reveal" id="edit">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15)">✏️</div>
+        <div>
+          <p class="section-label">05 — EDIT ENTRY</p>
+          <h2 class="section-title">Track every detail that matters</h2>
+        </div>
+      </div>
+
+      <div class="tip-row">
+        <div class="tip-content">
+          <div class="tip-number">05</div>
+          <p class="tip-title">THE EDIT FORM HAS MORE THAN YOU THINK</p>
+          <p class="tip-body">The Edit Entry screen scrolls quite far. Beyond the basics (proof, age, size, region), you'll find Fill Level, Pick Type, What I Paid, SRP, Market Value, Storage Location, Rating, Tasting Notes, and a "Would Buy Again" flag. Scroll all the way down to find Production Details and Treatment & Finishing sections.</p>
+          <div class="tip-callout">
+            <span class="tip-callout-icon">💡</span>
+            Production Details expands to reveal Barrel Number, Batch Number, Cask Number, Bottles Produced, Mash Bill, Rickhouse, Floor Number, and Barreled/Bottled dates — essential for serious single barrel hunters.
+          </div>
+        </div>
+        <div class="tip-phone">
+          <div class="tip-phone-glow"></div>
+          <div class="tip-phones-pair">
+            <div class="tip-phone-frame">
+              <img src="screen-edit1.png" alt="Edit entry top"/>
+            </div>
+            <div class="tip-phone-frame offset">
+              <img src="screen-edit2.png" alt="Edit entry middle"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <span class="tip-card-icon">📍</span>
+          <div>
+            <p class="tip-card-title">STORAGE LOCATION IS SCROLLABLE</p>
+            <p class="tip-card-body">The Storage Location row is a horizontally scrollable chip selector. Swipe left to see all your saved locations. Tap any chip to assign the bottle to that location instantly.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">🏷️</span>
+          <div>
+            <p class="tip-card-title">PICK TYPE MATTERS FOR ANALYTICS</p>
+            <p class="tip-card-body">Setting the correct Pick Type (Standard Release, Store Pick, Club Pick, Distillery Pick, Private Barrel, Ambassador Pick) unlocks pick-specific analytics and filters. Store and Club picks are tracked separately in your collection breakdown.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">🌊</span>
+          <div>
+            <p class="tip-card-title">TRACK CASK FINISHING</p>
+            <p class="tip-card-body">Expand the "Treatment & Finishing" section to toggle Finished / Cask Finished, Double Oak, Toasted Barrel, or Charred. Select the specific Finish Type from the dropdown (Sherry, Port, Rum, Wine, and many more) and add finish notes like duration and fill count.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">💰</span>
+          <div>
+            <p class="tip-card-title">FILLING IN SRP OR MARKET VALUE HELPS EVERYONE</p>
+            <p class="tip-card-body">If SRP or Market Value is missing from a bottle in the catalog, entering it in your Edit Entry automatically updates the master catalog — helping every user who has that bottle. If a value already exists and yours differs, it gets submitted for admin review.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><div class="divider-gem"></div></div>
+
+    <!-- ── PICK MY FLIGHT ── -->
+    <section class="section reveal" id="flight">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(46,64,87,0.4);border:1px solid rgba(74,96,128,0.3)">✦</div>
+        <div>
+          <p class="section-label">06 — PICK MY FLIGHT</p>
+          <h2 class="section-title">Let AI curate your next pour</h2>
+        </div>
+      </div>
+
+      <div class="tip-row reverse">
+        <div class="tip-content">
+          <div class="tip-number">06</div>
+          <p class="tip-title">GET THE MOST FROM YOUR FLIGHT</p>
+          <p class="tip-body">Pick My Flight uses AI to build a curated tasting sequence from your own collection. Choose 3–6 pours, toggle between all bottles or open-only, and optionally describe what you're in the mood for — whether that's a vibe chip like "Smoky" or a free-text description like "something for a cold night" or "10 years aged."</p>
+          <div class="tip-callout">
+            <span class="tip-callout-icon">💡</span>
+            Not happy with the result? Tap "Try Again" to regenerate with the same settings, or "Adjust Flight" to go back and change your preferences. You get 5 flights per day.
+          </div>
+        </div>
+        <div class="tip-phone">
+          <div class="tip-phone-glow"></div>
+          <div class="tip-phones-pair">
+            <div class="tip-phone-frame">
+              <img src="screen-flight-builder.png" alt="Flight builder"/>
+            </div>
+            <div class="tip-phone-frame offset">
+              <img src="screen-flight-result.png" alt="Flight result"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <span class="tip-card-icon">🔓</span>
+          <div>
+            <p class="tip-card-title">OPEN BOTTLES ONLY (RECOMMENDED)</p>
+            <p class="tip-card-body">Keep the "Open bottles only" toggle on for the best results — the AI will only suggest bottles you can actually pour right now. Toggle it off to plan ahead or see what a flight from your sealed collection might look like.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">🎯</span>
+          <div>
+            <p class="tip-card-title">BE SPECIFIC FOR BETTER RESULTS</p>
+            <p class="tip-card-body">The free-text field is powerful. Instead of just "sweet," try "something I'd sip by the fire on a cold night" or "high proof but approachable, no smoke." The more context you give, the more tailored the flight rationale will be.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">📖</span>
+          <div>
+            <p class="tip-card-title">READ THE RATIONALE</p>
+            <p class="tip-card-body">Each bottle in the flight comes with a one-sentence rationale explaining why it was chosen and where it fits in the tasting sequence. The Flight Theme at the top ties the whole experience together. It's worth reading — it makes the tasting more intentional.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><div class="divider-gem"></div></div>
+
+    <!-- ── FAQ ── -->
+    <section class="section reveal" id="faq">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15)">❓</div>
+        <div>
+          <p class="section-label">07 — FAQ</p>
+          <h2 class="section-title">Common questions</h2>
+        </div>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">What's the difference between free and premium?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">The free tier lets you add unlimited bottles to your collection and access the Scan tab. Premium unlocks Analytics, Community (achievements & leaderboard), Infinity Bottles, and Pick My Flight. Premium is $3.99/month or $34.99/year.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">How do I add a bottle that isn't in the catalog?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">Scan the barcode — if it's not found, you'll land on the "Not Found" screen. Tap "Add to Collection" and fill in the details. Your submission goes into our review queue and is added to the catalog for all users once approved. You can also add bottles manually using the "+ ADD BOTTLE" button without scanning.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">Can I track multiple bottles of the same expression?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">Yes. Use the "+ ANOTHER" button on any bottle detail to add a second copy. They'll be grouped together in your collection list and you can tap into each one individually to set different fill levels, purchase prices, locations, and tasting notes.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">Where do market values come from?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">Market values in the catalog are sourced and maintained by our team, with corrections submitted by the community. If a bottle's value is missing or wrong, you can update it via the Edit Entry screen — zero-value fields get updated immediately, while differing values go into a review queue.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">What is an Infinity Bottle?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">An infinity bottle is a blend built pour by pour over time — you add small amounts from different bottles to create a continuously evolving blend. Dram Diary tracks every contributing bottle, calculates the weighted average proof and age of the blend, and documents its history pour by pour.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">How does the rarity system work?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">Bottles are assigned a rarity tier: Common, Allocated, Rare, Ultra Rare, or Unicorn. These are set in the master catalog based on real-world availability and market pricing. You can override the rarity on any bottle in your personal collection via the Edit Entry screen.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">How do I report a problem with bottle data?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">Open the bottle detail, scroll to the bottom, and tap "REPORT AN ISSUE WITH THIS BOTTLE." You can flag incorrect Name, Distillery, Type, Proof, Age, SRP, Market Price, Rarity, or Image. Reports go directly to the admin review queue.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span class="faq-question-text">Is my collection data private?</span>
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p class="faq-answer-inner">Your personal collection data — what you paid, tasting notes, ratings, and private notes — is only visible to you. Your public profile shows your collector rank, badge count, distillery count, and wishlist, but never financial details.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <p class="footer-brand">DRAM DIARY™</p>
+        <p class="footer-tagline">Track your journey, share your passion</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/">HOME</a></li>
+        <li><a href="privacy.html">PRIVACY POLICY</a></li>
+        <li><a href="terms.html">TERMS OF SERVICE</a></li>
+        <li><a href="support.html">SUPPORT</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Blanchard Labs LLC. Dram Diary™ is a trademark.</span>
+      <span>Crafted for collectors</span>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 60);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // FAQ accordion
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+  </script>
+</body>
+</html>
