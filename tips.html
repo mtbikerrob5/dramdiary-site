@@ -510,31 +510,6 @@
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      #nav { padding: 16px 24px; }
-      .nav-links { display: none; }
-      .nav-hamburger { display: flex; }
-      .tip-row, .tip-row.reverse, .tip-row.wide-phones, .tip-row.reverse.wide-phones {
-        grid-template-columns: 1fr;
-        gap: 28px;
-      }
-      .tip-row.reverse .tip-phone { order: 0; }
-      .tip-phone { max-width: 280px; margin: 0 auto; }
-      .tip-phones-pair { max-width: 360px; margin: 0 auto; }
-      .tip-phones-triple { max-width: 480px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
-      .tip-phones-triple .tip-phone-frame { flex: 0 0 45%; }
-      .toc { gap: 8px; }
-      .toc-item { font-size: 9px; padding: 6px 12px; }
-      .tip-number { font-size: 2.2rem; }
-      .tip-callout { font-size: 14px; padding: 10px 14px; }
-      .tip-card { padding: 18px 20px; gap: 14px; }
-      .section { margin-bottom: 72px; }
-      .section-divider { margin: 0 0 72px; }
-      footer { padding: 48px 24px 32px; }
-      .footer-inner { flex-direction: column; gap: 24px; }
-    }
-
     /* ── HAMBURGER MENU ── */
     .nav-hamburger {
       display: none;
@@ -601,6 +576,31 @@
       height: 1px;
       background: var(--border);
       margin: 4px auto;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      #nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .tip-row, .tip-row.reverse, .tip-row.wide-phones, .tip-row.reverse.wide-phones {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .tip-row.reverse .tip-phone { order: 0; }
+      .tip-phone { max-width: 280px; margin: 0 auto; }
+      .tip-phones-pair { max-width: 360px; margin: 0 auto; }
+      .tip-phones-triple { max-width: 480px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+      .tip-phones-triple .tip-phone-frame { flex: 0 0 45%; }
+      .toc { gap: 8px; }
+      .toc-item { font-size: 9px; padding: 6px 12px; }
+      .tip-number { font-size: 2.2rem; }
+      .tip-callout { font-size: 14px; padding: 10px 14px; }
+      .tip-card { padding: 18px 20px; gap: 14px; }
+      .section { margin-bottom: 72px; }
+      .section-divider { margin: 0 0 72px; }
+      footer { padding: 48px 24px 32px; }
+      .footer-inner { flex-direction: column; gap: 24px; }
     }
   </style>
 </head>
