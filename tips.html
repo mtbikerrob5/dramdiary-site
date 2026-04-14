@@ -227,6 +227,12 @@
       grid-template-columns: 220px 1fr;
     }
     .tip-row.reverse .tip-phone { order: -1; }
+    .tip-row.wide-phones {
+      grid-template-columns: 1fr 340px;
+    }
+    .tip-row.reverse.wide-phones {
+      grid-template-columns: 340px 1fr;
+    }
 
     .tip-content {}
     .tip-number {
@@ -508,7 +514,7 @@
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
-      .tip-row, .tip-row.reverse {
+      .tip-row, .tip-row.reverse, .tip-row.wide-phones, .tip-row.reverse.wide-phones {
         grid-template-columns: 1fr;
       }
       .tip-row.reverse .tip-phone { order: 0; }
@@ -562,7 +568,7 @@
         </div>
       </div>
 
-      <div class="tip-row">
+      <div class="tip-row wide-phones">
         <div class="tip-content">
           <div class="tip-number">01</div>
           <p class="tip-title">TAP MARKET VALUE TO HIDE IT</p>
@@ -739,7 +745,7 @@
         </div>
       </div>
 
-      <div class="tip-row reverse">
+      <div class="tip-row reverse wide-phones">
         <div class="tip-content">
           <div class="tip-number">04</div>
           <p class="tip-title">GAIN, RETURN, AND MARKET VALUE EXPLAINED</p>
@@ -799,7 +805,7 @@
         </div>
       </div>
 
-      <div class="tip-row">
+      <div class="tip-row wide-phones">
         <div class="tip-content">
           <div class="tip-number">05</div>
           <p class="tip-title">THE EDIT FORM HAS MORE THAN YOU THINK</p>
@@ -866,7 +872,7 @@
         </div>
       </div>
 
-      <div class="tip-row reverse">
+      <div class="tip-row reverse wide-phones">
         <div class="tip-content">
           <div class="tip-number">06</div>
           <p class="tip-title">GET THE MOST FROM YOUR FLIGHT</p>
