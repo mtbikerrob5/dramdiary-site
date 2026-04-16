@@ -99,7 +99,7 @@
 
       const r = await fetch(`${FUNCTION_BASE}?action=fetch&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
       const data = await r.json();
-      if (!data.ok || !data.bottle) { showError('Could not load submission: ' + (data.error || 'Unknown error')); return; }
+      if (!data.ok || !data.bottle) { showError('Could not load submission: ' + (data.error || `HTTP ${r.status} — token may be invalid or bottle not found`)); return; }
       pendingBottle = data.bottle;
 
       const r2 = await fetch(`${FUNCTION_BASE}?action=fetch_candidates&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
