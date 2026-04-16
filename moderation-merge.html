@@ -85,6 +85,7 @@
     function fmtMoney(v) { return v ? '$' + Number(v).toLocaleString() : '—'; }
 
     const FIELDS = [
+      { key: 'name',          label: 'Name',           format: v => fmt(v) },
       { key: 'distillery',    label: 'Distillery',    format: v => fmt(v) },
       { key: 'region',        label: 'Region',         format: v => fmt(v) },
       { key: 'upc',           label: 'UPC',            format: v => fmt(v) },
