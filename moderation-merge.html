@@ -85,13 +85,17 @@
     function fmtMoney(v) { return v ? '$' + Number(v).toLocaleString() : '—'; }
 
     const FIELDS = [
-      { key: 'name',          label: 'Name',           format: v => fmt(v) },
+      { key: 'name',          label: 'Name',          format: v => fmt(v) },
       { key: 'distillery',    label: 'Distillery',    format: v => fmt(v) },
-      { key: 'region',        label: 'Region',         format: v => fmt(v) },
-      { key: 'upc',           label: 'UPC',            format: v => fmt(v) },
-      { key: 'msrp',          label: 'MSRP',           format: v => fmtMoney(v) },
-      { key: 'market_price',  label: 'Market Price',   format: v => fmtMoney(v) },
-      { key: 'image_url',     label: 'Image',          format: v => v ? `<img class="img-preview" src="${v}"/>` : '—', isHtml: true },
+      { key: 'type',          label: 'Type',          format: v => fmt(v) },
+      { key: 'proof',         label: 'Proof',         format: v => fmt(v, '°') },
+      { key: 'age_statement', label: 'Age',           format: v => fmt(v, ' yr') },
+      { key: 'region',        label: 'Region',        format: v => fmt(v) },
+      { key: 'upc',           label: 'UPC',           format: v => fmt(v) },
+      { key: 'msrp',          label: 'MSRP',          format: v => fmtMoney(v) },
+      { key: 'market_price',  label: 'Market Price',  format: v => fmtMoney(v) },
+      { key: 'mash_bill',     label: 'Mash Bill',     format: v => fmt(v) },
+      { key: 'image_url',     label: 'Image',         format: v => v ? `<img class="img-preview" src="${v}"/>` : '—', isHtml: true },
     ];
 
     async function load() {
@@ -99,7 +103,7 @@
 
       const r = await fetch(`${FUNCTION_BASE}?action=fetch&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
       const data = await r.json();
-      if (!data.ok || !data.bottle) { showError('Could not load submission: ' + (data.error || `HTTP ${r.status} — token may be invalid or bottle not found`)); return; }
+      if (!data.ok || !data.bottle) { showError('Could not load submission: ' + (data.error || 'Unknown error')); return; }
       pendingBottle = data.bottle;
 
       const r2 = await fetch(`${FUNCTION_BASE}?action=fetch_candidates&type=submission&id=${encodeURIComponent(bottleId)}&token=${encodeURIComponent(token)}`);
