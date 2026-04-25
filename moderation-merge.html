@@ -116,7 +116,7 @@
     function render() {
       const b = pendingBottle;
       document.getElementById('content').innerHTML = `
-        <div class="section-label">Pending Submission (will be rejected)</div>
+        <div class="section-label">Pending Submission (will be deleted)</div>
         <div class="bottle-card pending">
           ${b.image_url ? `<img class="bottle-img" src="${b.image_url}" alt=""/>` : ''}
           <div class="bottle-name">${b.name || '—'}</div>
@@ -300,8 +300,13 @@
         if (data.ok) {
           document.getElementById('content').style.display = 'none';
           const applied = Object.keys(selectedFields);
+          // Edge function deletes the submission row by default; if delete failed it falls back
+          // to soft-reject and returns deleted: false with a deleteError message.
+          const dispositionMsg = data.deleted === false
+            ? `Submission could not be deleted (${data.deleteError || 'unknown error'}) — marked rejected instead.`
+            : 'Submission deleted';
           showStatus(
-            `✅ Done! Submission rejected and ${data.repointed} user bottle(s) re-pointed to the existing entry.` +
+            `✅ Done! ${dispositionMsg} and ${data.repointed} user bottle(s) re-pointed to the existing entry.` +
             (applied.length ? ` Applied: ${applied.join(', ')}.` : ' No fields applied.'),
             'success'
           );
