@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Promo Codes — Admin · Dram Diary</title>
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png?v=2"/>
+  <style>
+    :root {
+      --bg: #1a1a1a; --bg-deep: #262626; --bg-elev: #2e2e2e;
+      --cream: #f5e6d3; --cream-dim: #a8957a;
+      --border: #3a3a3a; --border-light: #4a4a4a;
+      --gold: #c19a4a; --gold-dim: #8b6f30;
+      --teal: #4c948e; --teal-dim: #2a5754;
+      --slate: #2e4057;
+      --red: #c0392b; --red-dim: #7b1f1f;
+      --green: #27ae60; --green-dim: #1a6b3a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--cream);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh; padding: 24px;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 28px; margin-bottom: 4px; color: var(--cream); }
+    .subtitle { color: var(--cream-dim); font-size: 14px; margin-bottom: 32px; }
+
+    /* ── Login screen ── */
+    .login-card {
+      max-width: 400px; margin: 100px auto;
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px;
+    }
+    .login-card h2 { margin-bottom: 8px; }
+    .login-card p { color: var(--cream-dim); font-size: 13px; margin-bottom: 20px; }
+
+    /* ── Form/inputs ── */
+    label {
+      display: block; font-size: 11px; letter-spacing: 1.2px;
+      color: var(--cream-dim); text-transform: uppercase; margin-bottom: 6px; margin-top: 14px;
+    }
+    input[type=text], input[type=password], input[type=number], input[type=date], textarea, select {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 11px 12px; color: var(--cream); font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none; border-color: var(--gold);
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    .code-input {
+      font-family: "Menlo", monospace; letter-spacing: 1px; text-transform: uppercase;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-block; background: var(--gold); color: #000;
+      border: none; padding: 11px 18px; border-radius: 8px;
+      font-size: 13px; font-weight: 700; letter-spacing: 1px;
+      cursor: pointer; text-transform: uppercase;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { background: #d8af5a; }
+    .btn-secondary {
+      background: transparent; color: var(--cream); border: 1px solid var(--border-light);
+    }
+    .btn-secondary:hover:not(:disabled) { background: var(--bg-elev); border-color: var(--cream-dim); }
+    .btn-danger { background: var(--red); color: white; }
+    .btn-danger:hover:not(:disabled) { background: #d04a3a; }
+    .btn-sm { padding: 6px 12px; font-size: 11px; }
+
+    /* ── Cards/sections ── */
+    .card {
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; margin-bottom: 24px;
+    }
+    .card h2 {
+      font-size: 14px; letter-spacing: 1.5px; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 16px; font-weight: 600;
+    }
+
+    /* ── Form layout ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+    .form-actions { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      text-align: left; padding: 10px 8px; font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      color: var(--cream-dim); font-size: 10px; letter-spacing: 1.2px;
+      text-transform: uppercase; font-weight: 600;
+    }
+    tr:last-child td { border-bottom: none; }
+    .code-cell { font-family: "Menlo", monospace; color: var(--gold); }
+    .muted { color: var(--cream-dim); }
+    .badge {
+      display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px;
+      font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .badge-active { background: var(--green-dim); color: #7ad99c; }
+    .badge-disabled { background: var(--red-dim); color: #f5a89e; }
+    .badge-expired { background: var(--bg-elev); color: var(--cream-dim); }
+    .badge-exhausted { background: var(--gold-dim); color: var(--cream); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--bg-deep); border: 1px solid var(--gold);
+      padding: 14px 18px; border-radius: 8px; font-size: 13px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4); max-width: 320px;
+      animation: slideUp 0.2s ease-out;
+    }
+    .toast.error { border-color: var(--red); color: #f5a89e; }
+    .toast.success { border-color: var(--green); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .tab {
+      padding: 10px 16px; font-size: 13px; cursor: pointer;
+      color: var(--cream-dim); border-bottom: 2px solid transparent;
+      letter-spacing: 0.5px;
+    }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab:hover { color: var(--cream); }
+
+    .empty-state {
+      padding: 32px 16px; text-align: center; color: var(--cream-dim); font-size: 13px;
+    }
+    .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .help-text { color: var(--cream-dim); font-size: 11px; margin-top: 4px; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <!-- Login screen -->
+  <div id="login" class="container">
+    <div class="login-card">
+      <h2>Admin Sign-In</h2>
+      <p>Enter the admin password to manage promo codes.</p>
+      <form id="login-form" onsubmit="return false">
+        <label for="pwd">Password</label>
+        <input type="password" id="pwd" autocomplete="current-password" autofocus>
+        <div style="margin-top: 16px;">
+          <button type="submit" class="btn" id="login-btn">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main app -->
+  <div id="app" class="container" style="display: none;">
+    <h1>Promo Codes</h1>
+    <p class="subtitle">Create and manage promotional codes that grant free Premium access.</p>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="codes">Codes</div>
+      <div class="tab" data-tab="redemptions">Redemptions</div>
+    </div>
+
+    <!-- Codes Tab -->
+    <div id="tab-codes">
+      <div class="card">
+        <h2>Create New Code</h2>
+        <form id="create-form" onsubmit="return false">
+          <div class="form-row">
+            <div>
+              <label>Code <span class="muted">(letters, numbers, dashes)</span></label>
+              <input type="text" id="f-code" class="code-input" placeholder="e.g. INFLUENCER-MIKE-2026" required>
+              <div class="help-text">Or <a href="#" id="auto-gen" style="color: var(--gold);">auto-generate a random code</a></div>
+            </div>
+            <div>
+              <label>Duration</label>
+              <select id="f-duration">
+                <option value="1">1 month</option>
+                <option value="3">3 months</option>
+                <option value="6">6 months</option>
+                <option value="12" selected>12 months</option>
+                <option value="24">24 months</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Code Expires On <span class="muted">(no longer redeemable)</span></label>
+              <input type="date" id="f-expires" required>
+            </div>
+            <div>
+              <label>Max Redemptions <span class="muted">(blank = unlimited)</span></label>
+              <input type="number" id="f-max-uses" placeholder="1" min="1">
+            </div>
+          </div>
+          <label>Description <span class="muted">(internal notes)</span></label>
+          <textarea id="f-desc" placeholder="e.g. Mike's podcast giveaway, March 2026"></textarea>
+          <div class="form-actions">
+            <button type="submit" class="btn" id="create-btn">Create Code</button>
+            <button type="button" class="btn btn-secondary" onclick="resetCreateForm()">Reset</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Active Codes</h2>
+        <div id="codes-table-wrap"></div>
+      </div>
+    </div>
+
+    <!-- Redemptions Tab -->
+    <div id="tab-redemptions" style="display: none;">
+      <div class="card">
+        <h2>Recent Redemptions</h2>
+        <div id="redemptions-table-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-host"></div>
+
+  <script>
+    // ─── Configuration ─────────────────────────────────────────────────
+    const FUNCTION_URL = 'https://okxuvrrcpvzchzoictsf.supabase.co/functions/v1/admin-promo-codes';
+    // Anonymous Supabase API key — required by the Supabase HTTP gateway, but the
+    // function itself enforces auth via the admin token.
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reHV2cnJjcHZ6Y2h6b2ljdHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTU2MTAsImV4cCI6MjA4ODc3MTYxMH0.tQhWE2maV4eJLPoIlHYZW_lZzhgr5JX65jhK3R8zRmg';
+
+    // ─── Token storage ─────────────────────────────────────────────────
+    const TOKEN_KEY = 'dd_admin_token';
+    function getToken() { return localStorage.getItem(TOKEN_KEY); }
+    function setToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+    function clearToken() { localStorage.removeItem(TOKEN_KEY); }
+
+    // ─── API helper ────────────────────────────────────────────────────
+    async function api(action, payload = {}) {
+      const body = { action, ...payload };
+      const token = getToken();
+      if (token && action !== 'auth') body.token = token;
+
+      const res = await fetch(FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + ANON_KEY,
+        },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        if (res.status === 401 && action !== 'auth') {
+          // Token expired — drop to login
+          clearToken();
+          showLogin();
+        }
+        throw new Error(data.error || 'Request failed');
+      }
+      return data;
+    }
+
+    // ─── Toast ─────────────────────────────────────────────────────────
+    function toast(msg, type = 'success') {
+      const el = document.createElement('div');
+      el.className = 'toast ' + (type === 'error' ? 'error' : 'success');
+      el.textContent = msg;
+      document.getElementById('toast-host').appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    // ─── Login flow ────────────────────────────────────────────────────
+    function showLogin() {
+      document.getElementById('login').style.display = '';
+      document.getElementById('app').style.display = 'none';
+    }
+    function showApp() {
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('app').style.display = '';
+      loadCodes();
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async () => {
+      const pwd = document.getElementById('pwd').value.trim();
+      if (!pwd) return;
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      try {
+        const res = await api('auth', { password: pwd });
+        setToken(res.token);
+        document.getElementById('pwd').value = '';
+        showApp();
+      } catch (e) {
+        toast(e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Sign In';
+      }
+    });
+
+    // ─── Tab switching ─────────────────────────────────────────────────
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const which = tab.dataset.tab;
+        document.getElementById('tab-codes').style.display = which === 'codes' ? '' : 'none';
+        document.getElementById('tab-redemptions').style.display = which === 'redemptions' ? '' : 'none';
+        if (which === 'redemptions') loadRedemptions();
+      });
+    });
+
+    // ─── Default expiration date (90 days out) ─────────────────────────
+    function setDefaultExpiration() {
+      const d = new Date();
+      d.setDate(d.getDate() + 90);
+      document.getElementById('f-expires').value = d.toISOString().split('T')[0];
+    }
+    setDefaultExpiration();
+
+    // ─── Auto-generate code ────────────────────────────────────────────
+    document.getElementById('auto-gen').addEventListener('click', (e) => {
+      e.preventDefault();
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // omit I/O/0/1 to avoid confusion
+      const part = (n) => Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      const code = `${part(4)}-${part(4)}-${part(4)}`;
+      document.getElementById('f-code').value = code;
+    });
+
+    // ─── Reset form ────────────────────────────────────────────────────
+    function resetCreateForm() {
+      document.getElementById('create-form').reset();
+      setDefaultExpiration();
+      document.getElementById('f-duration').value = '12';
+    }
+
+    // ─── Create code ───────────────────────────────────────────────────
+    document.getElementById('create-form').addEventListener('submit', async () => {
+      const code = document.getElementById('f-code').value.trim().toUpperCase();
+      const duration_months = document.getElementById('f-duration').value;
+      const expires_date = document.getElementById('f-expires').value;
+      const max_uses = document.getElementById('f-max-uses').value || null;
+      const description = document.getElementById('f-desc').value.trim();
+
+      if (!code || !duration_months || !expires_date) {
+        toast('Please fill in code, duration, and expiration date', 'error');
+        return;
+      }
+
+      // Convert YYYY-MM-DD to end-of-day timestamp
+      const expires_at = new Date(expires_date + 'T23:59:59').toISOString();
+
+      const btn = document.getElementById('create-btn');
+      btn.disabled = true; btn.textContent = 'Creating…';
+      try {
+        await api('create', { code, description, duration_months, expires_at, max_uses });
+        toast(`Code ${code} created!`);
+        resetCreateForm();
+        loadCodes();
+      } catch (e) {
+        toast(e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Create Code';
+      }
+    });
+
+    // ─── List codes ────────────────────────────────────────────────────
+    async function loadCodes() {
+      const wrap = document.getElementById('codes-table-wrap');
+      wrap.innerHTML = '<div class="empty-state">Loading…</div>';
+      try {
+        const res = await api('list');
+        renderCodes(res.codes);
+      } catch (e) {
+        wrap.innerHTML = `<div class="empty-state">Could not load codes: ${e.message}</div>`;
+      }
+    }
+
+    function statusBadge(c) {
+      if (!c.is_active) return '<span class="badge badge-disabled">Disabled</span>';
+      if (new Date(c.expires_at) < new Date()) return '<span class="badge badge-expired">Expired</span>';
+      if (c.max_uses && c.current_uses >= c.max_uses) return '<span class="badge badge-exhausted">Exhausted</span>';
+      return '<span class="badge badge-active">Active</span>';
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function renderCodes(codes) {
+      const wrap = document.getElementById('codes-table-wrap');
+      if (!codes.length) {
+        wrap.innerHTML = '<div class="empty-state">No codes yet — create one above.</div>';
+        return;
+      }
+      const rows = codes.map(c => `
+        <tr>
+          <td class="code-cell">${escapeHtml(c.code)}</td>
+          <td>${c.duration_months} mo</td>
+          <td>${c.max_uses ? `${c.current_uses}/${c.max_uses}` : `${c.current_uses} / ∞`}</td>
+          <td>${fmtDate(c.expires_at)}</td>
+          <td>${statusBadge(c)}</td>
+          <td class="muted">${escapeHtml(c.description || '—')}</td>
+          <td class="row-actions">
+            ${c.is_active
+              ? `<button class="btn btn-secondary btn-sm" onclick="copyCode('${escapeAttr(c.code)}')">Copy</button>
+                 <button class="btn btn-danger btn-sm" onclick="disableCode('${c.id}','${escapeAttr(c.code)}')">Disable</button>`
+              : `<button class="btn btn-secondary btn-sm" onclick="enableCode('${c.id}','${escapeAttr(c.code)}')">Re-enable</button>`}
+          </td>
+        </tr>
+      `).join('');
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th><th>Duration</th><th>Uses</th><th>Expires</th>
+              <th>Status</th><th>Description</th><th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    async function disableCode(id, code) {
+      if (!confirm(`Disable code "${code}"? Users won't be able to redeem it anymore. You can re-enable later.`)) return;
+      try {
+        await api('disable', { id });
+        toast('Code disabled');
+        loadCodes();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function enableCode(id, code) {
+      try {
+        await api('enable', { id });
+        toast('Code re-enabled');
+        loadCodes();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    function copyCode(code) {
+      navigator.clipboard.writeText(code).then(
+        () => toast(`Copied ${code}`),
+        () => toast('Copy failed', 'error')
+      );
+    }
+
+    // ─── Redemptions ───────────────────────────────────────────────────
+    async function loadRedemptions() {
+      const wrap = document.getElementById('redemptions-table-wrap');
+      wrap.innerHTML = '<div class="empty-state">Loading…</div>';
+      try {
+        const res = await api('redemptions');
+        renderRedemptions(res.redemptions);
+      } catch (e) {
+        wrap.innerHTML = `<div class="empty-state">Could not load redemptions: ${e.message}</div>`;
+      }
+    }
+
+    function renderRedemptions(rows) {
+      const wrap = document.getElementById('redemptions-table-wrap');
+      if (!rows || !rows.length) {
+        wrap.innerHTML = '<div class="empty-state">No redemptions yet.</div>';
+        return;
+      }
+      const html = rows.map(r => {
+        const code = r.promo_codes?.code || '—';
+        const desc = r.promo_codes?.description || '';
+        const userName = r.profile?.username || r.profile?.display_name || r.profiles?.username || r.profiles?.display_name || '(unknown)';
+        return `
+          <tr>
+            <td class="code-cell">${escapeHtml(code)}</td>
+            <td>${escapeHtml(userName)}</td>
+            <td>${fmtDate(r.redeemed_at)}</td>
+            <td>${fmtDate(r.premium_until)}</td>
+            <td class="muted">${escapeHtml(desc)}</td>
+          </tr>
+        `;
+      }).join('');
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr><th>Code</th><th>User</th><th>Redeemed</th><th>Premium Until</th><th>Description</th></tr>
+          </thead>
+          <tbody>${html}</tbody>
+        </table>
+      `;
+    }
+
+    // ─── HTML escaping ─────────────────────────────────────────────────
+    function escapeHtml(s) {
+      if (s === null || s === undefined) return '';
+      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function escapeAttr(s) { return escapeHtml(s).replace(/'/g, "\\'"); }
+
+    // ─── Boot ──────────────────────────────────────────────────────────
+    if (getToken()) {
+      // Verify the token still works by trying a list call
+      api('list').then(res => {
+        showApp();
+        renderCodes(res.codes);
+      }).catch(() => {
+        clearToken();
+        showLogin();
+      });
+    } else {
+      showLogin();
+    }
+  </script>
+</body>
+</html>
