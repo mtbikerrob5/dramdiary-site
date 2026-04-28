@@ -83,6 +83,17 @@
 
     function fmt(v, suffix = '') { return (v != null && v !== '') ? v + suffix : '—'; }
     function fmtMoney(v) { return v ? '$' + Number(v).toLocaleString() : '—'; }
+    function fmtRarity(v) {
+      if (!v) return '—';
+      const map = {
+        common:      'Common',
+        allocated:   'Allocated',
+        rare:        'Rare',
+        ultra_rare:  'Ultra Rare',
+        unicorn:     'Unicorn',
+      };
+      return map[v] || v;
+    }
 
     const FIELDS = [
       { key: 'name',          label: 'Name',          format: v => fmt(v) },
@@ -91,6 +102,7 @@
       { key: 'proof',         label: 'Proof',         format: v => fmt(v, '°') },
       { key: 'age_statement', label: 'Age',           format: v => fmt(v, ' yr') },
       { key: 'region',        label: 'Region',        format: v => fmt(v) },
+      { key: 'rarity',        label: 'Rarity',        format: v => fmtRarity(v) },
       { key: 'upc',           label: 'UPC',           format: v => fmt(v) },
       { key: 'msrp',          label: 'MSRP',          format: v => fmtMoney(v) },
       { key: 'market_price',  label: 'Market Price',  format: v => fmtMoney(v) },
