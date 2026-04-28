@@ -625,6 +625,8 @@
     <div class="mobile-menu-divider"></div>
     <a href="#dashboard" onclick="closeMobileMenu()">DASHBOARD</a>
     <div class="mobile-menu-divider"></div>
+    <a href="#single-barrel" onclick="closeMobileMenu()">SINGLE BARRELS</a>
+    <div class="mobile-menu-divider"></div>
     <a href="#collection" onclick="closeMobileMenu()">COLLECTION</a>
     <div class="mobile-menu-divider"></div>
     <a href="#scan" onclick="closeMobileMenu()">SCAN</a>
@@ -643,6 +645,7 @@
     <p class="hero-sub reveal">Hidden features, pro tips, and a complete walkthrough of every screen — so nothing goes undiscovered.</p>
     <nav class="toc reveal">
       <a href="#dashboard" class="toc-item">DASHBOARD</a>
+      <a href="#single-barrel" class="toc-item">SINGLE BARRELS</a>
       <a href="#collection" class="toc-item">COLLECTION</a>
       <a href="#scan" class="toc-item">SCANNING</a>
       <a href="#bottle-detail" class="toc-item">BOTTLE DETAIL</a>
@@ -715,12 +718,82 @@
 
     <div class="section-divider"><div class="divider-gem"></div></div>
 
+    <!-- ── SINGLE BARRELS ── -->
+    <section class="section reveal" id="single-barrel">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(184,115,51,0.1);border:1px solid rgba(184,115,51,0.25)">🛢️</div>
+        <div>
+          <p class="section-label">02 — SINGLE BARRELS</p>
+          <h2 class="section-title">Built for the barrel hunter</h2>
+        </div>
+      </div>
+
+      <div class="tip-with-phone">
+        <div class="tip-content">
+          <p class="tip-eyebrow">THE DIFFERENTIATOR</p>
+          <h3 class="tip-title">Single barrel picks deserve their own workflow</h3>
+          <p class="tip-body">Most apps treat single barrel picks as an afterthought — a checkbox or an extra field tucked into a generic bottle entry. Dram Diary flips that. Toggle <strong>Single Barrel Pick</strong> at the top of Add Bottle and the whole form adapts: pick type chips appear, a contextual selector field shows up, and rarity is auto-set to Rare so you can move on.</p>
+          <p class="tip-body">Whether it's a club allocation, a store pick, a private group barrel, or a distillery-direct selection, every detail you care about — barrel number, selector, proof, age — has a proper home.</p>
+          <div class="tip-callout">
+            <span class="tip-callout-icon">💡</span>
+            Why this matters: barrel-specific fields like proof and age are stored on YOUR copy, not in the shared catalog. So a Buffalo Trace store pick at 119.2 proof doesn't overwrite the standard Buffalo Trace proof for everyone else — your data and the catalog stay clean.
+          </div>
+        </div>
+        <div class="tip-phone">
+          <div class="tip-phone-glow"></div>
+          <div class="tip-phone-frame">
+            <img src="screen-single-barrel.png" alt="Single Barrel Pick form"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip-card">
+          <span class="tip-card-icon">🎯</span>
+          <div>
+            <p class="tip-card-title">FOUR PICK TYPES</p>
+            <p class="tip-card-body"><strong>Club</strong> for subscription releases (Bourbonr, Seelbach's, etc.). <strong>Store</strong> for retailer barrel picks. <strong>Private</strong> for community groups, friends-and-family pulls, or any pick that isn't store/club. <strong>Distillery</strong> for picks selected on-site at the distillery itself. Each type changes the contextual field that appears below — Club Name, Store Name, Group / Organization, or just Selector Name.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">🏷️</span>
+          <div>
+            <p class="tip-card-title">SELECTOR & BARREL NUMBER</p>
+            <p class="tip-card-body">Capture who picked the barrel and which barrel it was. The selector name shows up on your bottle cards (configurable via Card View) so you can scan your collection and recall "oh right, that one's the Mash &amp; Journey pick." Barrel numbers help you track whether you've already added a specific pick to your collection.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">⭐</span>
+          <div>
+            <p class="tip-card-title">AUTO-RARITY</p>
+            <p class="tip-card-body">Toggle Single Barrel Pick on and rarity is automatically set to <strong>Rare</strong> with a locked summary view — no extra step needed. If you've actually got a unicorn-tier single barrel (rare but real), tap "CHANGE" to expand the full rarity selector and override. Toggling off and back on resets to Rare for clean defaults.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">🛡️</span>
+          <div>
+            <p class="tip-card-title">DISTILLERY PICKS PROTECT THE CATALOG</p>
+            <p class="tip-card-body">When you mark a pick as <strong>Distillery</strong> type, the app understands the proof and age are barrel-specific and won't suggest those values as catalog corrections. Your picks improve the catalog where it makes sense (region, image) but never pollute it with single-barrel variance.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-card-icon">📊</span>
+          <div>
+            <p class="tip-card-title">ANALYTICS & ACHIEVEMENTS</p>
+            <p class="tip-card-body">Pick types power dedicated analytics — see your collection breakdown by Standard / Store / Club / Private / Distillery picks. Achievements like <strong>Barrel Picker</strong> (25+ single-barrel picks) and <strong>Club Member</strong> (picks from 3+ different clubs) reward depth in this category specifically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><div class="divider-gem"></div></div>
+
     <!-- ── COLLECTION ── -->
     <section class="section reveal" id="collection">
       <div class="section-header">
         <div class="section-icon" style="background:rgba(76,148,142,0.1);border:1px solid rgba(76,148,142,0.2)">🍾</div>
         <div>
-          <p class="section-label">02 — COLLECTION</p>
+          <p class="section-label">03 — COLLECTION</p>
           <h2 class="section-title">Find exactly what you're looking for</h2>
         </div>
       </div>
@@ -780,7 +853,7 @@
       <div class="section-header">
         <div class="section-icon" style="background:rgba(184,115,51,0.1);border:1px solid rgba(184,115,51,0.2)">📷</div>
         <div>
-          <p class="section-label">03 — SCANNING</p>
+          <p class="section-label">04 — SCANNING</p>
           <h2 class="section-title">Scan smarter, not harder</h2>
         </div>
       </div>
@@ -835,7 +908,7 @@
       <div class="section-header">
         <div class="section-icon" style="background:rgba(155,127,212,0.1);border:1px solid rgba(155,127,212,0.2)">🏷️</div>
         <div>
-          <p class="section-label">04 — BOTTLE DETAIL</p>
+          <p class="section-label">05 — BOTTLE DETAIL</p>
           <h2 class="section-title">Everything about your bottle</h2>
         </div>
       </div>
@@ -895,7 +968,7 @@
       <div class="section-header">
         <div class="section-icon" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15)">✏️</div>
         <div>
-          <p class="section-label">05 — EDIT ENTRY</p>
+          <p class="section-label">06 — EDIT ENTRY</p>
           <h2 class="section-title">Track every detail that matters</h2>
         </div>
       </div>
@@ -935,14 +1008,14 @@
           <span class="tip-card-icon">🏷️</span>
           <div>
             <p class="tip-card-title">PICK TYPE MATTERS FOR ANALYTICS</p>
-            <p class="tip-card-body">Setting the correct Pick Type (Standard Release, Store Pick, Club Pick, Distillery Pick, Private Barrel, Ambassador Pick) unlocks pick-specific analytics and filters. Store and Club picks are tracked separately in your collection breakdown.</p>
+            <p class="tip-card-body">Setting the correct Pick Type (Standard Release, Store Pick, Club Pick, Distillery Pick, Private Barrel) unlocks pick-specific analytics and filters. Store and Club picks are tracked separately in your collection breakdown.</p>
           </div>
         </div>
         <div class="tip-card">
           <span class="tip-card-icon">🌊</span>
           <div>
             <p class="tip-card-title">TRACK CASK FINISHING</p>
-            <p class="tip-card-body">Expand the "Treatment & Finishing" section to toggle Finished / Cask Finished, Double Oak, Toasted Barrel, or Charred. Select the specific Finish Type from the dropdown (Sherry, Port, Rum, Wine, and many more) and add finish notes like duration and fill count.</p>
+            <p class="tip-card-body">Expand the "Treatment &amp; Finishing" section to toggle Finished / Cask Finished, Double Oak, Toasted Barrel, or Charred. Tap one or more <strong>Finish Type</strong> chips to capture every finish on the bottle (PX Sherry + Oloroso, Port + Rum, etc.) — most bottles use 1–3. Add finish notes like duration or sequence below.</p>
           </div>
         </div>
         <div class="tip-card">
@@ -962,7 +1035,7 @@
       <div class="section-header">
         <div class="section-icon" style="background:rgba(46,64,87,0.4);border:1px solid rgba(74,96,128,0.3)">✦</div>
         <div>
-          <p class="section-label">06 — PICK MY FLIGHT</p>
+          <p class="section-label">07 — PICK MY FLIGHT</p>
           <h2 class="section-title">Let AI curate your next pour</h2>
         </div>
       </div>
@@ -1022,7 +1095,7 @@
       <div class="section-header">
         <div class="section-icon" style="background:rgba(76,148,142,0.08);border:1px solid rgba(76,148,142,0.15)">👤</div>
         <div>
-          <p class="section-label">07 — PROFILE & SETTINGS</p>
+          <p class="section-label">08 — PROFILE & SETTINGS</p>
           <h2 class="section-title">Your collector identity</h2>
         </div>
       </div>
@@ -1052,7 +1125,7 @@
           <p class="tip-body">Scroll past the collector rank to find your full settings panel. From here you can manage your subscription, configure notification preferences, toggle privacy settings for your public profile, export your data, connect with friends, and more.</p>
           <div class="tip-callout">
             <span class="tip-callout-icon">💡</span>
-            Use "Export My Data" to download a CSV of your full collection — great for backups or sharing with friends outside the app.
+            <strong>Coming soon:</strong> Export My Data will let you download a CSV of your full collection — great for backups or sharing with friends outside the app.
           </div>
         </div>
         <div class="tip-phone">
@@ -1102,7 +1175,7 @@
       <div class="section-header">
         <div class="section-icon" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15)">❓</div>
         <div>
-          <p class="section-label">08 — FAQ</p>
+          <p class="section-label">09 — FAQ</p>
           <h2 class="section-title">Common questions</h2>
         </div>
       </div>
