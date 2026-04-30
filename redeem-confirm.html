@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Activating Premium — Dram Diary™</title>
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #f5f0e8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #262626;
+      border-radius: 16px;
+      padding: 48px 36px;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-top: 2px solid #C9A84C;
+    }
+    .logo {
+      font-family: -apple-system, sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #C9A84C;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+    .emoji { font-size: 56px; margin-bottom: 22px; line-height: 1; }
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #f5f0e8;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: #C8B89A;
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+    .premium-until {
+      font-size: 14px;
+      color: #C9A84C;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,168,76,0.2), transparent);
+      margin: 28px 0 20px;
+    }
+    .open-app {
+      display: inline-block;
+      background: #C9A84C;
+      color: #1a1a1a;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .open-app:hover { background: #d8b65a; }
+    .note {
+      font-size: 12px;
+      color: #7A6E5F;
+      line-height: 1.6;
+    }
+    .note a {
+      color: #8B6914;
+      text-decoration: none;
+    }
+    .note a:hover { color: #C9A84C; }
+    .footer {
+      margin-top: 28px;
+      font-size: 11px;
+      color: #5a5a5a;
+      letter-spacing: 1px;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(201,168,76,0.2);
+      border-top-color: #C9A84C;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 18px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">DRAM DIARY™</div>
+
+    <!-- Loading state (initial) -->
+    <div id="loading-state">
+      <div class="spinner"></div>
+      <h1>Activating Premium…</h1>
+      <p class="subtitle">Hang tight — we're applying your code.</p>
+    </div>
+
+    <!-- Success state -->
+    <div id="success-state" style="display:none;">
+      <div class="emoji">✨</div>
+      <h1 id="success-title">Premium Activated</h1>
+      <p class="subtitle" id="success-subtitle">
+        Your Dram Diary Premium is active.
+      </p>
+      <div class="premium-until" id="premium-until"></div>
+      <div class="divider"></div>
+      <a href="dramdiary://" class="open-app" id="open-btn">OPEN THE APP</a>
+      <p class="note">
+        Already in the app? Pull down on the dashboard to refresh, or sign out and back in if Premium doesn't appear right away.
+        <br><br>
+        <a href="https://dramdiary.com">dramdiary.com</a>
+        &nbsp;·&nbsp;
+        <a href="https://dramdiary.com/support.html">Support</a>
+      </p>
+    </div>
+
+    <!-- Error state -->
+    <div id="error-state" style="display:none;">
+      <div class="emoji">⚠️</div>
+      <h1>Link Expired</h1>
+      <p class="subtitle" id="error-msg">
+        This confirmation link has expired or has already been used.
+      </p>
+      <div class="divider"></div>
+      <a href="/redeem.html" class="open-app">TRY AGAIN</a>
+      <p class="note">
+        Need help? <a href="https://dramdiary.com/support.html">Contact support</a>.
+      </p>
+    </div>
+
+    <div class="footer">© 2026 Blanchard Labs LLC</div>
+  </div>
+
+  <script>
+    const FUNCTION_URL = 'https://okxuvrrcpvzchzoictsf.supabase.co/functions/v1/redeem-promo-public';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reHV2cnJjcHZ6Y2h6b2ljdHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTU2MTAsImV4cCI6MjA4ODc3MTYxMH0.tQhWE2maV4eJLPoIlHYZW_lZzhgr5JX65jhK3R8zRmg';
+
+    function fmtDate(iso) {
+      try {
+        return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      } catch { return ''; }
+    }
+
+    function showError(msg) {
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('success-state').style.display = 'none';
+      document.getElementById('error-state').style.display = '';
+      if (msg) document.getElementById('error-msg').textContent = msg;
+    }
+
+    function showSuccess(data) {
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('error-state').style.display = 'none';
+      document.getElementById('success-state').style.display = '';
+
+      const months = data.duration_months;
+      const until = fmtDate(data.premium_until);
+      document.getElementById('success-title').textContent = 'Premium Activated';
+      document.getElementById('success-subtitle').textContent =
+        `You now have ${months} month${months === 1 ? '' : 's'} of Dram Diary Premium.`;
+      document.getElementById('premium-until').textContent = until ? `Active through ${until}` : '';
+    }
+
+    async function confirm() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (!token) {
+        showError('No confirmation token in this link.');
+        return;
+      }
+      try {
+        const res = await fetch(FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + ANON_KEY,
+          },
+          body: JSON.stringify({ action: 'confirm', token }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          showError(data.error || 'This link is invalid or has expired.');
+          return;
+        }
+        showSuccess(data);
+      } catch (e) {
+        showError('Network error. Please try again from the redemption page.');
+      }
+    }
+
+    confirm();
+  </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Redeem Code — Dram Diary™</title>
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #f5f0e8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #262626;
+      border-radius: 16px;
+      padding: 44px 36px;
+      max-width: 460px;
+      width: 100%;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-top: 2px solid #C9A84C;
+    }
+    .logo {
+      font-family: -apple-system, sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #C9A84C;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f5f0e8;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #C8B89A;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #a8957a;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 8px;
+      margin-top: 18px;
+    }
+    input[type=email], input[type=text] {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 13px 14px;
+      color: #f5f0e8;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #C9A84C;
+    }
+    input.code {
+      font-family: Menlo, monospace;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .help {
+      font-size: 11px;
+      color: #7A6E5F;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      background: #C9A84C;
+      color: #1a1a1a;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-transform: uppercase;
+      margin-top: 28px;
+      transition: background 0.15s;
+    }
+    .btn:hover:not(:disabled) { background: #d8b65a; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .alert {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .alert.error {
+      background: rgba(192,57,43,0.12);
+      border: 1px solid rgba(192,57,43,0.4);
+      color: #f5a89e;
+    }
+    .alert.success {
+      background: rgba(76,148,142,0.12);
+      border: 1px solid rgba(76,148,142,0.4);
+      color: #6ab4ae;
+    }
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,168,76,0.2), transparent);
+      margin: 28px 0 20px;
+    }
+    .footer-note {
+      font-size: 12px;
+      color: #7A6E5F;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .footer-note a { color: #8B6914; text-decoration: none; }
+    .footer-note a:hover { color: #C9A84C; }
+    .footer {
+      margin-top: 24px;
+      font-size: 11px;
+      color: #5a5a5a;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .emoji { font-size: 48px; line-height: 1; margin-bottom: 18px; text-align: center; }
+    #success-state { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">DRAM DIARY™</div>
+
+    <!-- Form state -->
+    <div id="form-state">
+      <h1>Redeem Premium Code</h1>
+      <p class="subtitle">Enter the email tied to your Dram Diary account and your code to activate Premium.</p>
+
+      <form id="redeem-form" onsubmit="return false">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required/>
+        <p class="help">Use the same email you signed in with on your iPhone.</p>
+
+        <label for="code">Code</label>
+        <input type="text" id="code" class="code" placeholder="ENTER-YOUR-CODE" autocomplete="off" autocapitalize="characters" autocorrect="off" required/>
+
+        <button type="submit" class="btn" id="submit-btn">Send Confirmation Email</button>
+
+        <div id="error-box" class="alert error" style="display:none;"></div>
+      </form>
+
+      <div class="divider"></div>
+      <p class="footer-note">
+        Don't have an account yet?<br/>
+        Download Dram Diary on the App Store, sign up, then come back here to redeem.
+      </p>
+    </div>
+
+    <!-- Success state -->
+    <div id="success-state">
+      <div class="emoji">📩</div>
+      <h1>Check Your Email</h1>
+      <p class="subtitle">
+        We sent a confirmation link to <strong id="sent-to" style="color:#C9A84C"></strong>. Click it to activate Premium on your account. The link expires in 30 minutes.
+      </p>
+      <div class="divider"></div>
+      <p class="footer-note">
+        Didn't get the email? Check your spam folder, or
+        <a href="#" onclick="resetForm(); return false;">try again</a>.
+      </p>
+    </div>
+
+    <div class="footer">© 2026 Blanchard Labs LLC</div>
+  </div>
+
+  <script>
+    const FUNCTION_URL = 'https://okxuvrrcpvzchzoictsf.supabase.co/functions/v1/redeem-promo-public';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reHV2cnJjcHZ6Y2h6b2ljdHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTU2MTAsImV4cCI6MjA4ODc3MTYxMH0.tQhWE2maV4eJLPoIlHYZW_lZzhgr5JX65jhK3R8zRmg';
+
+    const form = document.getElementById('redeem-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorBox = document.getElementById('error-box');
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = '';
+    }
+    function hideError() { errorBox.style.display = 'none'; }
+
+    function resetForm() {
+      document.getElementById('success-state').style.display = 'none';
+      document.getElementById('form-state').style.display = '';
+      hideError();
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Confirmation Email';
+    }
+
+    form.addEventListener('submit', async () => {
+      hideError();
+      const email = document.getElementById('email').value.trim();
+      const code  = document.getElementById('code').value.trim().toUpperCase();
+      if (!email || !code) {
+        showError('Please enter both your email and your code.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch(FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + ANON_KEY,
+          },
+          body: JSON.stringify({ action: 'request', email, code }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          showError(data.error || 'Something went wrong. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Confirmation Email';
+          return;
+        }
+        // Success — show "check your email"
+        document.getElementById('sent-to').textContent = email;
+        document.getElementById('form-state').style.display = 'none';
+        document.getElementById('success-state').style.display = '';
+      } catch (e) {
+        showError('Network error. Please check your connection and try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Confirmation Email';
+      }
+    });
+  </script>
+</body>
+</html>
