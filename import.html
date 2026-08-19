@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Import Your Collection — Dram Diary™</title>
+  <meta name="description" content="Bring your whiskey collection into Dram Diary from a spreadsheet. Download the import template or use your own .xlsx or .csv — we match your columns automatically."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --gold-dim: #8B6914;
+      --bg-deep: #1a1a1a;
+      --bg: #262626;
+      --bg-elevated: #2e2e2e;
+      --bg-card: #323232;
+      --border: rgba(201,168,76,0.18);
+      --cream: #F5EDD6;
+      --cream-mid: #C8B89A;
+      --cream-dim: #7A6E5F;
+      --sage: #4c948e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-deep);
+      color: var(--cream);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.75;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(26,26,26,0.97);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--cream-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--gold); }
+
+    .page-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 24px 120px;
+    }
+    .page-label {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--cream-mid);
+      font-style: italic;
+      margin-bottom: 56px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid var(--border);
+    }
+    h2.section-h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 32px;
+    }
+    .section { margin-bottom: 72px; }
+    .lede { color: var(--cream-mid); font-size: 17px; margin-bottom: 28px; }
+    .lede strong { color: var(--cream); font-weight: 600; }
+
+    /* Buttons */
+    .btn-gold {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gold);
+      color: #1a1a1a;
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 16px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 24px rgba(201,168,76,0.25);
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(201,168,76,0.4);
+    }
+    .btn-gold svg { flex-shrink: 0; }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold-dim);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 15px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); color: var(--gold-light); }
+    .btn-note {
+      display: block;
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--cream-dim);
+      margin-top: 12px;
+    }
+
+    /* Download card */
+    .download-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 72px;
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .download-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .download-body { flex: 1; min-width: 240px; }
+    .download-body h2 {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .download-body p { color: var(--cream-mid); font-size: 16px; margin-bottom: 20px; }
+
+    /* Steps */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .step {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 24px;
+      position: relative;
+    }
+    .step-num {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 14px;
+      opacity: 0.9;
+    }
+    .step h3 {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .step p { color: var(--cream-mid); font-size: 15.5px; line-height: 1.6; }
+    .step p strong { color: var(--cream); font-weight: 600; }
+    .step .path {
+      display: inline-block;
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--gold-light);
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 4px;
+      padding: 3px 8px;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    /* Column table */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    th, td {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 15px;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    th {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      font-weight: 600;
+      background: rgba(201,168,76,0.05);
+      white-space: nowrap;
+    }
+    tr:last-child td { border-bottom: none; }
+    td.col-name { color: var(--cream); font-weight: 600; white-space: nowrap; }
+    td.col-req { white-space: nowrap; }
+    td.col-vals { color: var(--cream-mid); font-size: 15px; }
+    td.col-vals em { color: var(--cream-dim); }
+    .req {
+      display: inline-block;
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .req-yes { background: var(--gold); color: #1a1a1a; }
+    .req-no { background: rgba(255,255,255,0.05); color: var(--cream-dim); border: 1px solid rgba(255,255,255,0.08); }
+    .req-rec { background: rgba(76,148,142,0.15); color: #7fc4be; border: 1px solid rgba(76,148,142,0.3); }
+    .table-note { font-size: 15px; color: var(--cream-dim); margin-top: 16px; font-style: italic; }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      padding: 28px 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      color: var(--gold-light);
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .faq-q::after {
+      content: '+';
+      font-size: 20px;
+      color: var(--gold-dim);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a {
+      font-size: 16px;
+      color: var(--cream-mid);
+      line-height: 1.7;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .faq-item.open .faq-a { max-height: 400px; }
+    .faq-a strong { color: var(--cream); font-weight: 600; }
+
+    /* CTA */
+    .cta-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 40px;
+      text-align: center;
+      margin-top: 24px;
+    }
+    .cta-card .page-label { margin-bottom: 12px; }
+    .cta-card h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+    .cta-card p { color: var(--cream-mid); font-size: 16px; margin-bottom: 28px; }
+    .cta-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .app-badge:hover {
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(76,148,142,0.5);
+      transform: translateY(-1px);
+    }
+    .app-badge .badge-sub {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--cream-dim);
+      display: block;
+      text-align: left;
+    }
+    .app-badge .badge-main {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.5px;
+      display: block;
+      text-align: left;
+    }
+    .cta-hint { font-size: 13px; color: var(--cream-dim); margin-top: 20px; margin-bottom: 0; }
+
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--cream-dim);
+    }
+
+    @media (max-width: 760px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 16px 24px; }
+      h1 { font-size: 2.2rem; }
+      h2.section-h2 { font-size: 1.6rem; }
+      .page-wrap { padding: 56px 20px 96px; }
+      .download-card { padding: 28px 24px; }
+      .cta-card { padding: 36px 24px; }
+      .btn-gold, .btn-outline { width: 100%; justify-content: center; }
+      .cta-actions { flex-direction: column; }
+      .app-badge { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">DRAM DIARY™</a>
+    <a href="/" class="nav-back">← BACK HOME</a>
+  </nav>
+
+  <div class="page-wrap">
+    <p class="page-label">BRING YOUR COLLECTION WITH YOU</p>
+    <h1>Import Your Collection</h1>
+    <p class="subtitle">Already tracking your bottles in a spreadsheet? Bring the whole shelf into Dram Diary in a couple of minutes — no retyping.</p>
+
+    <!-- Download -->
+    <div class="download-card">
+      <div class="download-icon">📥</div>
+      <div class="download-body">
+        <h2>THE IMPORT TEMPLATE</h2>
+        <p>A ready-made Excel workbook with the right columns, dropdowns for type and size, three example rows, and a short set of instructions. Only <strong style="color:var(--cream)">Name</strong> is required — leave anything you don't know blank.</p>
+        <a class="btn-gold" href="/import/dram-diary-import-template.xlsx" download="dram-diary-import-template.xlsx">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          DOWNLOAD TEMPLATE (.XLSX)
+        </a>
+        <span class="btn-note">WORKS IN EXCEL, NUMBERS &amp; GOOGLE SHEETS · .CSV ALSO ACCEPTED</span>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="section">
+      <h2 class="section-h2">How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>GET YOUR SPREADSHEET READY</h3>
+          <p>Download the template above, or use the sheet you already keep. <strong>We match your columns automatically</strong> — “Bottle”, “Brand”, “Price Paid” and friends are all recognised, and you can fix any mismatch before importing.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>GET THE FILE ONTO YOUR IPHONE</h3>
+          <p><strong>AirDrop</strong> it from your Mac, save it to <strong>iCloud Drive / Files</strong>, or simply <strong>email it to yourself</strong> and save the attachment. Any .xlsx or .csv works.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>IMPORT IN DRAM DIARY</h3>
+          <p>Open the app, go to <span class="path">PROFILE → IMPORT COLLECTION</span>, pick the file, review the matches we found, and tap import. Done — your shelf is in your pocket.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column reference -->
+    <div class="section">
+      <h2 class="section-h2">Column reference</h2>
+      <p class="lede">These are the columns the template uses. Your own headers don't need to match exactly — the importer recognises common synonyms and lets you map anything it can't guess.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>COLUMN</th><th>REQUIRED</th><th>ACCEPTED VALUES</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="col-name">Name</td><td class="col-req"><span class="req req-yes">REQUIRED</span></td><td class="col-vals">Bottle / expression name, e.g. “Eagle Rare 10 Year”</td></tr>
+            <tr><td class="col-name">Distillery</td><td class="col-req"><span class="req req-rec">RECOMMENDED</span></td><td class="col-vals">Producer or brand — helps us match the right catalog entry</td></tr>
+            <tr><td class="col-name">Type</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Bourbon, Rye, Tennessee, American Single Malt, American Blend, Wheat Whiskey, Corn Whiskey, Scotch Single Malt, Scotch Blended, Irish, Japanese, Canadian, Other <em>(blank = Bourbon)</em></td></tr>
+            <tr><td class="col-name">Proof</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Number 1–200 <em>(an “ABV” column is also accepted and doubled)</em></td></tr>
+            <tr><td class="col-name">Age (Years)</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Whole number 0–100 <em>(blank = no age statement)</em></td></tr>
+            <tr><td class="col-name">Size</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">50ml, 200ml, 375ml, 700ml, 750ml, 1L, 1.75L <em>(blank = 750ml)</em></td></tr>
+            <tr><td class="col-name">Purchase Date</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Any common date format</td></tr>
+            <tr><td class="col-name">Purchase Price</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Number — “$” and commas are fine</td></tr>
+            <tr><td class="col-name">Purchased From</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Store or retailer</td></tr>
+            <tr><td class="col-name">Storage Location</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Free text <em>(blank = “Home Bar”)</em></td></tr>
+            <tr><td class="col-name">Open?</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Yes / No, Y / N, True / False, Open / Sealed, 1 / 0</td></tr>
+            <tr><td class="col-name">Date Opened</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Any common date format</td></tr>
+            <tr><td class="col-name">Fill Level %</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">0–100 <em>(blank = 100)</em></td></tr>
+            <tr><td class="col-name">Rating (0-100)</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">0–100</td></tr>
+            <tr><td class="col-name">Tasting Notes</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Free text</td></tr>
+            <tr><td class="col-name">Private Notes</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Free text — never shown publicly</td></tr>
+            <tr><td class="col-name">UPC</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Digits only, 8–14</td></tr>
+            <tr><td class="col-name">Release Year</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">4-digit year</td></tr>
+            <tr><td class="col-name">Pick Type</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Standard, Store Pick, Club Pick, Distillery Pick, Private Barrel <em>(blank = Standard)</em></td></tr>
+            <tr><td class="col-name">Barrel #</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Free text</td></tr>
+            <tr><td class="col-name">Quantity</td><td class="col-req"><span class="req req-no">OPTIONAL</span></td><td class="col-vals">Whole number ≥ 1 — one row becomes that many bottles <em>(blank = 1)</em></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Extra columns are ignored, so there's no need to trim your existing sheet.</p>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section">
+      <h2 class="section-h2">Frequently Asked Questions</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">DO I HAVE TO USE YOUR TEMPLATE?</div>
+        <div class="faq-a">No. Any <strong>.xlsx</strong> or <strong>.csv</strong> file works. When you pick a file, Dram Diary reads your header row, guesses which column is which, and shows you the mapping so you can correct anything before a single bottle is imported. The template is just the quickest way to start from scratch.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">WHAT HAPPENS TO BOTTLES YOU DON'T RECOGNISE?</div>
+        <div class="faq-a">They're added to your collection <strong>immediately</strong> — nothing waits and no data is lost. Behind the scenes we create a catalog entry that's visible only to you until our team reviews it. Once reviewed it becomes part of the shared catalog (or gets merged into an existing entry), and your bottle simply follows along.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">WILL THIS CREATE DUPLICATES?</div>
+        <div class="faq-a">We match every row against our catalog of 40,000+ bottles. Confident matches are linked automatically; close-but-not-certain matches are shown to you so you can <strong>confirm the right one</strong> or add the bottle as new. If anything slips through, our team merges it during review — your collection is re-pointed and nothing you entered is lost.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">CAN I UNDO AN IMPORT?</div>
+        <div class="faq-a">Yes. Go to <strong>Profile → Import Collection → Recent imports</strong> and tap <strong>Undo</strong> next to the import. Every bottle created by that import is removed from your collection in one step. Bottles you added by hand are never touched.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">IS IMPORT FREE?</div>
+        <div class="faq-a">Yes. Importing your collection is free for every Dram Diary account, with no bottle limit.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-card">
+      <p class="page-label">READY WHEN YOU ARE</p>
+      <h2>Bring your shelf into Dram Diary</h2>
+      <p>Have the file on your iPhone? Open the app straight to the import screen. Don't have the app yet? Grab it on the App Store.</p>
+      <div class="cta-actions">
+        <a class="btn-gold" href="dramdiary://import">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          OPEN IN DRAM DIARY
+        </a>
+        <a class="app-badge" href="https://apps.apple.com/us/app/dram-diary/id6760627043" target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#aaa"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 13.86 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c0 2.5 2 4 2 4"/></svg>
+          <span>
+            <span class="badge-sub">DOWNLOAD ON THE</span>
+            <span class="badge-main">App Store</span>
+          </span>
+        </a>
+      </div>
+      <p class="cta-hint">“Open in Dram Diary” only works on an iPhone with the app installed.</p>
+    </div>
+  </div>
+
+  <footer>© 2026 DRAM DIARY™ — ALL RIGHTS RESERVED</footer>
+
+  <script>
+    document.querySelectorAll('.faq-q').forEach(q => {
+      q.addEventListener('click', () => {
+        q.closest('.faq-item').classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>
