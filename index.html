@@ -286,6 +286,54 @@
     }
     .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
 
+    .hero-import-note {
+      position: relative;
+      z-index: 1;
+      margin-top: 28px;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      color: var(--cream-dim);
+      animation: fadeUp 1s ease 1.1s both;
+    }
+    .hero-import-note a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201,168,76,0.35); }
+    .hero-import-note a:hover { color: var(--gold-light); border-bottom-color: var(--gold-light); }
+
+    /* ── IMPORT CALLOUT ── */
+    .import-callout { padding: 0 24px 80px; max-width: 900px; margin: 0 auto; }
+    .import-card {
+      background: linear-gradient(135deg, rgba(76,148,142,0.08) 0%, rgba(201,168,76,0.05) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 56px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .import-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 10%; right: 10%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--sage-light), transparent);
+    }
+    .import-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 32px 0 36px; }
+    .import-step { border: 1px solid var(--border-faint); border-radius: 12px; padding: 18px 18px 16px; background: rgba(0,0,0,0.18); }
+    .import-step-num { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; color: var(--sage-light); line-height: 1; margin-bottom: 10px; }
+    .import-step-title { font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--cream); margin-bottom: 8px; }
+    .import-step-text { font-family: 'Crimson Pro', Georgia, serif; font-size: 15px; color: var(--cream-dim); line-height: 1.55; }
+    .import-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .btn-gold {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--gold); color: #1a1a1a;
+      font-family: 'Josefin Sans', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2px;
+      padding: 16px 30px; border-radius: 8px; text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
+    @media (max-width: 720px) {
+      .import-card { padding: 36px 26px; }
+      .import-steps { grid-template-columns: 1fr; }
+    }
+
     /* ── SECTION DIVIDER ── */
     .section-divider {
       display: flex;
@@ -897,6 +945,7 @@
     <ul class="nav-links">
       <li><a href="#features">FEATURES</a></li>
       <li><a href="#analytics">ANALYTICS</a></li>
+      <li><a href="import.html">IMPORT</a></li>
       <li><a href="tips.html">TIPS</a></li>
       <li><a href="privacy.html">PRIVACY</a></li>
       <li><a href="terms.html">TERMS</a></li>
@@ -911,6 +960,8 @@
     <a href="#features" onclick="closeMobileMenu()">FEATURES</a>
     <div class="mobile-menu-divider"></div>
     <a href="#analytics" onclick="closeMobileMenu()">ANALYTICS</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="import.html">IMPORT YOUR COLLECTION</a>
     <div class="mobile-menu-divider"></div>
     <a href="tips.html">TIPS & TRICKS</a>
     <div class="mobile-menu-divider"></div>
@@ -941,6 +992,7 @@
       </a>
       <a href="#features" class="btn-secondary">EXPLORE FEATURES ↓</a>
     </div>
+    <p class="hero-import-note">Already tracking your bottles in a spreadsheet or another app? <a href="import.html">Import your whole collection in minutes →</a></p>
   </section>
 
   <div class="section-divider"><div class="divider-gem"></div></div>
@@ -1140,19 +1192,64 @@
     </div>
   </section>
 
+  <!-- IMPORT CALLOUT -->
+  <section class="import-callout" id="import" style="scroll-margin-top: 80px;">
+    <div class="import-card reveal">
+      <p class="barrel-eyebrow" style="color: var(--sage-light);">SWITCHING FROM A SPREADSHEET OR ANOTHER APP?</p>
+      <h2 class="barrel-heading">Bring your whole shelf.<br/><em>No retyping.</em></h2>
+      <p class="barrel-text">
+        Most collectors already have their bottles in Excel, Numbers, or an app they've outgrown. Upload that file — ours or your own — and Dram Diary™ adds every bottle to your collection in one go, matching your columns automatically and checking each bottle against our catalog. Undo the whole import with a tap if you change your mind.
+      </p>
+      <div class="import-steps">
+        <div class="import-step">
+          <div class="import-step-num">1</div>
+          <p class="import-step-title">GET YOUR FILE READY</p>
+          <p class="import-step-text">Download our template or use the spreadsheet you already keep. Only the bottle name is required.</p>
+        </div>
+        <div class="import-step">
+          <div class="import-step-num">2</div>
+          <p class="import-step-title">SEND IT TO YOUR IPHONE</p>
+          <p class="import-step-text">AirDrop it, save it to iCloud Drive, or email it to yourself. Any .xlsx or .csv works.</p>
+        </div>
+        <div class="import-step">
+          <div class="import-step-num">3</div>
+          <p class="import-step-title">IMPORT IN THE APP</p>
+          <p class="import-step-text">Profile → Import Collection. Review the matches, tap import, and your shelf is in your pocket.</p>
+        </div>
+      </div>
+      <div class="import-actions">
+        <a class="btn-gold" href="import.html">HOW TO IMPORT →</a>
+        <a class="btn-secondary" href="import/dram-diary-import-template.xlsx" download="dram-diary-import-template.xlsx">DOWNLOAD TEMPLATE (.XLSX)</a>
+      </div>
+      <div class="barrel-fields" style="margin-top: 28px;">
+        <span class="barrel-field" style="color: var(--sage-light); border-color: rgba(76,148,142,0.35); background: rgba(76,148,142,0.08);">EXCEL &amp; CSV</span>
+        <span class="barrel-field" style="color: var(--sage-light); border-color: rgba(76,148,142,0.35); background: rgba(76,148,142,0.08);">YOUR OWN COLUMNS</span>
+        <span class="barrel-field" style="color: var(--sage-light); border-color: rgba(76,148,142,0.35); background: rgba(76,148,142,0.08);">CATALOG MATCHING</span>
+        <span class="barrel-field" style="color: var(--sage-light); border-color: rgba(76,148,142,0.35); background: rgba(76,148,142,0.08);">UP TO 500 BOTTLES PER FILE</span>
+        <span class="barrel-field" style="color: var(--sage-light); border-color: rgba(76,148,142,0.35); background: rgba(76,148,142,0.08);">ONE-TAP UNDO</span>
+        <span class="barrel-field" style="color: var(--sage-light); border-color: rgba(76,148,142,0.35); background: rgba(76,148,142,0.08);">FREE</span>
+      </div>
+    </div>
+  </section>
+
   <div class="section-divider"><div class="divider-gem"></div></div>
 
   <!-- FEATURES GRID -->
   <section class="features">
     <p class="section-label reveal">WHAT'S INSIDE</p>
     <h2 class="section-title reveal">Everything a serious<br/><em>collector needs</em></h2>
-    <p class="section-body reveal">From barcode scanning to AI-curated tasting flights, Dram Diary™ is the only app built from the ground up for whiskey enthusiasts who take their collection seriously.</p>
+    <p class="section-body reveal">From barcode scanning and spreadsheet import to AI-curated tasting flights, Dram Diary™ is the only app built from the ground up for whiskey enthusiasts who take their collection seriously.</p>
 
     <div class="features-grid">
       <div class="feature-card reveal" style="--feature-accent:var(--gold);--feature-bg:rgba(201,168,76,0.08);--feature-border:rgba(201,168,76,0.18)">
         <div class="feature-icon">📷</div>
         <p class="feature-name">BARCODE SCANNER</p>
         <p class="feature-desc">Scan any bottle to instantly pull details from our 40,000+ bottle catalog. Not there? Submit it and it's added to the community database after review.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--sage-light);--feature-bg:rgba(76,148,142,0.08);--feature-border:rgba(76,148,142,0.18)">
+        <div class="feature-icon">📥</div>
+        <p class="feature-name">SPREADSHEET IMPORT</p>
+        <p class="feature-desc">Already have your bottles in Excel or another app? Upload the file and bring your whole collection over in minutes — we match your columns and your bottles for you. <a href="import.html" style="color:var(--sage-light);text-decoration:none;border-bottom:1px solid rgba(106,180,174,0.4)">Learn how →</a></p>
       </div>
       <div class="feature-card reveal" style="--feature-accent:var(--copper-light);--feature-bg:rgba(184,115,51,0.08);--feature-border:rgba(184,115,51,0.18)">
         <div class="feature-icon">∞</div>
@@ -1178,6 +1275,16 @@
         <div class="feature-icon">🏆</div>
         <p class="feature-name">ACHIEVEMENTS & RANKS</p>
         <p class="feature-desc">36 achievements across 7 categories. Your collector rank advances from Newcomer to Warehouse as your collection, tasting notes, and community contributions grow.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--slate);--feature-bg:rgba(46,64,87,0.18);--feature-border:rgba(107,163,200,0.18)">
+        <div class="feature-icon">🥃</div>
+        <p class="feature-name">SHELF & FILL TRACKING</p>
+        <p class="feature-desc">Storage locations, fill level on every open bottle, and how long each one has been breathing — so the good stuff in the basement never gets forgotten.</p>
+      </div>
+      <div class="feature-card reveal" style="--feature-accent:var(--sage);--feature-bg:rgba(76,148,142,0.06);--feature-border:rgba(76,148,142,0.15)">
+        <div class="feature-icon">👥</div>
+        <p class="feature-name">COMMUNITY LEADERBOARDS</p>
+        <p class="feature-desc">Compare bottle counts and badges with other collectors, see what the community is hunting, and keep your profile public or private — your call.</p>
       </div>
     </div>
   </section>
@@ -1219,6 +1326,7 @@
     <p class="section-label reveal">GET STARTED</p>
     <h2 class="hero-title reveal">Start your diary.</h2>
     <p class="hero-tagline reveal">Track your journey, share your passion</p>
+    <p class="hero-import-note reveal" style="margin-top:0;margin-bottom:28px;animation:none">Bringing an existing collection? <a href="import.html">Import it in minutes →</a></p>
     <div class="hero-cta-group reveal" style="opacity:1;animation:none">
       <a class="app-badge" href="https://apps.apple.com/us/app/dram-diary/id6760627043" target="_blank" rel="noopener">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#aaa"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 13.86 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c0 2.5 2 4 2 4"/></svg>
@@ -1241,6 +1349,7 @@
         <li><a href="https://apps.apple.com/us/app/dram-diary/id6760627043" target="_blank" rel="noopener">DOWNLOAD</a></li>
         <li><a href="#features">FEATURES</a></li>
         <li><a href="#analytics">ANALYTICS</a></li>
+        <li><a href="import.html">IMPORT YOUR COLLECTION</a></li>
         <li><a href="tips.html">TIPS & TRICKS</a></li>
         <li><a href="privacy.html">PRIVACY POLICY</a></li>
         <li><a href="terms.html">TERMS OF SERVICE</a></li>
