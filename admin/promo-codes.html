@@ -205,7 +205,58 @@
       </div>
 
       <div class="card">
-        <h2>Active Codes</h2>
+        <h2>Create a Batch</h2>
+        <form id="batch-form" onsubmit="return false">
+          <div class="form-row">
+            <div>
+              <label>How many codes</label>
+              <input type="number" id="b-count" min="1" max="500" value="150">
+              <div class="help-text">1–500. Each code is unique, random, and single-use by default — perfect for one code per business card.</div>
+            </div>
+            <div>
+              <label>Prefix <span class="muted">(optional, printed on every code)</span></label>
+              <input type="text" id="b-prefix" class="code-input" value="DRAM" maxlength="8" placeholder="DRAM">
+              <div class="help-text">Codes look like <span style="font-family:Menlo,monospace;color:var(--gold)">DRAM-7WQ2-K9XP</span></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Duration</label>
+              <select id="b-duration">
+                <option value="1">1 month</option>
+                <option value="3" selected>3 months</option>
+                <option value="6">6 months</option>
+                <option value="12">12 months</option>
+                <option value="24">24 months</option>
+              </select>
+            </div>
+            <div>
+              <label>Codes Expire On <span class="muted">(no longer redeemable)</span></label>
+              <input type="date" id="b-expires" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Max Redemptions Per Code <span class="muted">(1 = single-use)</span></label>
+              <input type="number" id="b-max-uses" min="1" value="1">
+            </div>
+            <div>
+              <label>Batch Label <span class="muted">(saved as each code's description)</span></label>
+              <input type="text" id="b-desc" placeholder="e.g. Bourbon Club cards, Sep 2026">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn" id="batch-btn">Generate Batch</button>
+            <span class="help-text" style="margin-top:0">A CSV downloads automatically when it finishes — hand that to the print shop.</span>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h2 style="margin-bottom:0">Active Codes</h2>
+          <button class="btn btn-secondary btn-sm" onclick="exportCodesCsv()">Export CSV</button>
+        </div>
         <div id="codes-table-wrap"></div>
       </div>
     </div>
@@ -363,12 +414,80 @@
       }
     });
 
+    // ─── Batch create ──────────────────────────────────────────────────
+    (function setDefaultBatchExpiration() {
+      const d = new Date(); d.setDate(d.getDate() + 180);
+      document.getElementById('b-expires').value = d.toISOString().split('T')[0];
+    })();
+
+    function downloadCsv(filename, rows) {
+      const csvEscape = v => {
+        const s = String(v ?? '');
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+      const csv = rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    }
+
+    function codesToCsvRows(codes) {
+      return [
+        ['Code', 'Duration (months)', 'Expires', 'Max Uses', 'Uses', 'Status', 'Description'],
+        ...codes.map(c => [
+          c.code, c.duration_months, fmtDate(c.expires_at),
+          c.max_uses ?? 'unlimited', c.current_uses ?? 0,
+          !c.is_active ? 'Disabled' : (new Date(c.expires_at) < new Date() ? 'Expired' : 'Active'),
+          c.description || '',
+        ]),
+      ];
+    }
+
+    let lastLoadedCodes = [];
+    function exportCodesCsv() {
+      if (!lastLoadedCodes.length) { toast('Nothing to export yet', 'error'); return; }
+      downloadCsv('dram-diary-promo-codes.csv', codesToCsvRows(lastLoadedCodes));
+    }
+
+    document.getElementById('batch-form').addEventListener('submit', async () => {
+      const count = parseInt(document.getElementById('b-count').value, 10);
+      const prefix = document.getElementById('b-prefix').value.trim();
+      const duration_months = document.getElementById('b-duration').value;
+      const expires_date = document.getElementById('b-expires').value;
+      const max_uses = document.getElementById('b-max-uses').value || '1';
+      const description = document.getElementById('b-desc').value.trim();
+
+      if (!count || count < 1 || count > 500) { toast('Count must be 1–500', 'error'); return; }
+      if (!expires_date) { toast('Pick an expiration date', 'error'); return; }
+      if (!confirm(`Generate ${count} random codes (${duration_months} mo Premium, ` +
+                   `${max_uses === '1' ? 'single-use' : max_uses + ' uses'} each)?`)) return;
+
+      const expires_at = new Date(expires_date + 'T23:59:59').toISOString();
+      const btn = document.getElementById('batch-btn');
+      btn.disabled = true; btn.textContent = 'Generating…';
+      try {
+        const res = await api('bulk_create', { count, prefix, duration_months, expires_at, description, max_uses });
+        toast(`${res.created} codes created — downloading CSV`);
+        const label = (description || 'batch').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'batch';
+        downloadCsv(`dram-diary-codes-${label}-${new Date().toISOString().slice(0,10)}.csv`, codesToCsvRows(res.codes));
+        loadCodes();
+      } catch (e) {
+        toast(e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Generate Batch';
+      }
+    });
+
     // ─── List codes ────────────────────────────────────────────────────
     async function loadCodes() {
       const wrap = document.getElementById('codes-table-wrap');
       wrap.innerHTML = '<div class="empty-state">Loading…</div>';
       try {
         const res = await api('list');
+        lastLoadedCodes = res.codes || [];
         renderCodes(res.codes);
       } catch (e) {
         wrap.innerHTML = `<div class="empty-state">Could not load codes: ${e.message}</div>`;
