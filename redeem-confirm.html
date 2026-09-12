@@ -102,6 +102,14 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
+  <!-- HeyCatch analytics -->
+  <script type="module">
+    import { analytics } from 'https://esm.sh/@heycatch/sdk@0.7.0';
+    analytics.init({
+      projectKey: 'hck_pk_WPCY4ZQIhEZjva6RhUF2x944g8xkNgYT',
+      install: { framework: 'web', agent: 'claude-code' },
+    });
+  </script>
 </head>
 <body>
   <div class="card">
