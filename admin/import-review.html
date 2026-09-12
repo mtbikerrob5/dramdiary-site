@@ -210,6 +210,8 @@
     }
     .cand-body { flex: 1; min-width: 0; font-size: 13px; line-height: 1.4; }
     .cand-body .cand-name { color: var(--cream); font-weight: 600; }
+    .cand-body .cand-name .badge { margin-left: 6px; font-size: 10px; vertical-align: middle; }
+    .cand-family { border-color: var(--gold); }
     .cand-body .cand-sub { color: var(--cream-dim); font-size: 12px; }
     .cand-thumb { width: 32px; height: 42px; border-radius: 4px; object-fit: cover; background: var(--bg-elev); flex-shrink: 0; }
     .cand .badge { flex-shrink: 0; }
@@ -577,14 +579,25 @@
         (c.age_statement !== null && c.age_statement !== undefined && c.age_statement !== '') ? esc(c.age_statement) + ' yr' : null,
         c.type ? esc(TYPE_LABEL[c.type] || c.type) : null,
       ].filter(Boolean).join(' · ');
-      return `<div class="cand" data-cand-id="${esc(c.id)}">
+      // Batch families: the parent reads "Stagg (batch family · 15 batches)", a child reads
+      // "Stagg · Batch 23A", so it is obvious whether a merge lands on the family or one batch.
+      let nameHtml = esc(c.name || '(unnamed)');
+      let tag = '';
+      if (c.is_family) {
+        tag = `<span class="badge badge-mid">batch family${c.batch_count ? ' · ' + c.batch_count + ' batches' : ''}</span>`;
+      } else if (c.batch_label) {
+        nameHtml = `${esc(c.parent_name || c.name)} <span class="muted">·</span> Batch ${esc(c.batch_label)}`;
+        tag = `<span class="badge badge-lo">batch</span>`;
+      }
+      const mergeLabel = c.is_family ? 'Merge into family' : c.batch_label ? `Merge into batch ${esc(c.batch_label)}` : 'Merge into this';
+      return `<div class="cand${c.is_family ? ' cand-family' : ''}" data-cand-id="${esc(c.id)}">
           ${img ? `<img class="cand-thumb" src="${img}" alt="" loading="lazy">` : ''}
           <div class="cand-body">
-            <div class="cand-name">${esc(c.name || '(unnamed)')}</div>
+            <div class="cand-name">${nameHtml} ${tag}</div>
             <div class="cand-sub">${sub || '<span class="muted">no details</span>'}</div>
           </div>
           ${showScore && c.score !== undefined && c.score !== null ? scoreBadge(c.score) : ''}
-          <button class="btn btn-teal btn-sm" data-action="merge" data-target="${esc(c.id)}">Merge into this</button>
+          <button class="btn btn-teal btn-sm" data-action="merge" data-target="${esc(c.id)}">${mergeLabel}</button>
         </div>`;
     }
 
