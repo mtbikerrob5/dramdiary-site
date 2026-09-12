@@ -182,7 +182,17 @@
     .item-fields { flex: 1; min-width: 0; }
     .item-fields label { margin-top: 10px; }
     .item-fields label:first-child { margin-top: 0; }
-    .field-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .field-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .dis-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .dis-head h2 { margin: 0; }
+    .dis-head .muted { font-size: 12px; }
+    .dis-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border); }
+    .dis-row:first-of-type { border-top: 0; }
+    .dis-name { font-weight: 600; color: var(--cream); }
+    .dis-sub { font-size: 12px; color: var(--cream-dim); margin-top: 2px; }
+    .dis-sub b { color: var(--gold); }
+    .dis-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    @media (max-width: 720px) { .dis-row { grid-template-columns: 1fr; } .dis-actions { justify-content: flex-start; } }
     .field-grid label { margin-top: 10px; }
     .item-meta { font-size: 12px; color: var(--cream-dim); margin-top: 12px; line-height: 1.6; }
     .item-meta b { color: var(--cream); font-weight: 600; }
@@ -257,6 +267,8 @@
     <p class="stats-line" id="stats-line">Loading…</p>
 
     <div class="chips" id="chips"></div>
+
+    <div id="disagreements"></div>
 
     <div id="items"></div>
   </div>
@@ -349,6 +361,8 @@
       batchId: null,      // active batch filter (null = all)
       pendingTotal: 0,
       pendingImport: 0,
+      disagreements: [],  // rows from v_proof_disagreements
+      disAll: false,      // false = 2+ users only
     };
 
     // ─── Login flow ────────────────────────────────────────────────────
@@ -396,10 +410,13 @@
       wrap.innerHTML = '<div class="empty-state">Loading…</div>';
       try {
         const payload = state.batchId ? { batch_id: state.batchId } : {};
-        const [stats, list] = await Promise.all([
+        const [stats, list, dis] = await Promise.all([
           api('stats').catch(() => null),
           api('list_pending', payload),
+          api('list_proof_disagreements', { min_users: state.disAll ? 1 : 2 }).catch(() => null),
         ]);
+        state.disagreements = dis && Array.isArray(dis.items) ? dis.items : [];
+        renderDisagreements();
         if (stats) {
           state.pendingTotal = Number(stats.pending_total) || 0;
           state.pendingImport = Number(stats.pending_import) || 0;
@@ -432,6 +449,56 @@
     }
 
     function bottleOf(item) { return item.bottle || {}; }
+
+    // ─── Proof disagreements ───────────────────────────────────────────
+    // Users whose bottle proof differs from a fixed-proof catalog row. Nothing here is
+    // blocking anyone: their bottles already carry their own proof. This is the digest
+    // that replaces per-bottle review for proof mismatches.
+    function renderDisagreements() {
+      const el = document.getElementById('disagreements');
+      const rows = state.disagreements || [];
+      const toggle = `<a href="#" id="dis-toggle" class="muted">${state.disAll ? 'show 2+ users only' : 'show single reports too'}</a>`;
+      if (!rows.length) {
+        el.innerHTML = `<div class="card"><div class="dis-head"><h2>Proof disagreements</h2>${toggle}</div>
+          <div class="muted">No fixed-proof bottles have ${state.disAll ? 'any' : 'multiple'} owners reporting a different proof.</div></div>`;
+        return;
+      }
+      el.innerHTML = `<div class="card"><div class="dis-head"><h2>Proof disagreements</h2>${toggle}</div>
+        ${rows.map(r => `<div class="dis-row" data-bottle="${esc(r.bottle_id)}" data-observed="${esc(r.observed_proof)}">
+          <div>
+            <div class="dis-name">${esc(r.name)}${r.distillery ? ` <span class="muted">· ${esc(r.distillery)}</span>` : ''}</div>
+            <div class="dis-sub">catalog <b>${r.catalog_proof ?? '—'}°</b> · reported <b>${r.observed_proof}°</b> by <b>${r.user_count}</b> ${r.user_count === 1 ? 'user' : 'users'}${r.batch_number ? ` · batch <b>${esc(r.batch_number)}</b>` : ''} · ${r.owner_count} owner${r.owner_count === 1 ? '' : 's'} · ${esc(r.proof_policy)} · last ${esc(fmtDate(r.last_seen))}</div>
+          </div>
+          <div class="dis-actions">
+            <button class="btn btn-sm" data-dis="accept" title="Catalog proof becomes ${r.observed_proof}° and untouched owner snapshots follow">Set catalog to ${r.observed_proof}°</button>
+            <button class="btn btn-sm btn-teal" data-dis="variable" title="Proof varies by batch or barrel; stop tracking disagreements for this bottle">Mark variable</button>
+            <button class="btn btn-sm btn-secondary" data-dis="dismiss" title="Drop this report; owners keep their own proof">Dismiss</button>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    document.getElementById('disagreements').addEventListener('click', async (e) => {
+      const t = e.target.closest('#dis-toggle');
+      if (t) { e.preventDefault(); state.disAll = !state.disAll; loadAll(); return; }
+      const btn = e.target.closest('[data-dis]');
+      if (!btn) return;
+      const row = btn.closest('.dis-row');
+      const bottle_id = row.dataset.bottle, observed_proof = row.dataset.observed, resolution = btn.dataset.dis;
+      if (resolution === 'accept' && !confirm(`Set the catalog proof to ${observed_proof}°? Owners who still hold the old catalog value will be updated.`)) return;
+      row.querySelectorAll('button').forEach(b => b.disabled = true);
+      try {
+        await api('resolve_proof', { bottle_id, observed_proof, resolution });
+        toast(resolution === 'accept' ? 'Catalog proof updated' : resolution === 'variable' ? 'Marked variable' : 'Dismissed');
+        state.disagreements = (state.disagreements || []).filter(r => resolution === 'dismiss'
+          ? !(String(r.bottle_id) === bottle_id && String(r.observed_proof) === observed_proof)
+          : String(r.bottle_id) !== bottle_id);
+        renderDisagreements();
+      } catch (err) {
+        toast(err.message || 'Failed', 'error');
+        row.querySelectorAll('button').forEach(b => b.disabled = false);
+      }
+    });
 
     // ─── Header stats ──────────────────────────────────────────────────
     function renderStats() {
@@ -514,6 +581,13 @@
         </div>`;
     }
 
+    // fixed: one proof for the release. variable: cask strength / barrel proof / picks, the user's
+    // proof lives on their bottle and never needs review. batched: curated child rows per batch.
+    function policySelect(current) {
+      const opts = [['fixed', 'Fixed proof'], ['variable', 'Varies by batch / barrel'], ['batched', 'Curated batches']];
+      return `<select class="f-policy">${opts.map(([v, l]) => `<option value="${v}"${(current || 'fixed') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
+    }
+
     function typeSelect(current) {
       const cur = current || 'bourbon';
       const opts = TYPE_OPTIONS.map(([k, label]) =>
@@ -576,6 +650,10 @@
                 <label>Release year</label>
                 <input type="number" class="f-year" step="1" min="1800" max="2100" value="${esc(year)}" placeholder="—">
               </div>
+              <div>
+                <label>Proof policy</label>
+                ${policySelect(b.proof_policy)}
+              </div>
             </div>
             <label>UPC</label>
             <input type="text" class="f-upc" inputmode="numeric" value="${esc(b.upc)}" placeholder="digits only">
@@ -636,7 +714,8 @@
       const age_statement = numOrNull(card.querySelector('.f-age').value);
       const vintage_year = numOrNull(card.querySelector('.f-year').value);
       const upc = card.querySelector('.f-upc').value.replace(/\D+/g, '') || null;
-      return { name, distillery: distillery || null, type, proof, age_statement, vintage_year, upc };
+      const proof_policy = card.querySelector('.f-policy') ? card.querySelector('.f-policy').value : undefined;
+      return { name, distillery: distillery || null, type, proof, age_statement, vintage_year, upc, proof_policy };
     }
 
     function setBusy(card, busy) {
