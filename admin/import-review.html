@@ -470,7 +470,9 @@
             <div class="dis-sub">catalog <b>${r.catalog_proof ?? '—'}°</b> · reported <b>${r.observed_proof}°</b> by <b>${r.user_count}</b> ${r.user_count === 1 ? 'user' : 'users'}${r.batch_number ? ` · batch <b>${esc(r.batch_number)}</b>` : ''} · ${r.owner_count} owner${r.owner_count === 1 ? '' : 's'} · ${esc(r.proof_policy)} · last ${esc(fmtDate(r.last_seen))}</div>
           </div>
           <div class="dis-actions">
-            <button class="btn btn-sm" data-dis="accept" title="Catalog proof becomes ${r.observed_proof}° and untouched owner snapshots follow">Set catalog to ${r.observed_proof}°</button>
+            ${r.proof_policy === 'batched' && r.batch_number
+              ? `<button class="btn btn-sm" data-dis="create_batch" data-label="${esc(r.batch_number)}" title="Adds ${esc(r.batch_number)} as a batch under ${esc(r.name)} at ${r.observed_proof}° and moves the owners who typed that batch onto it">Create batch ${esc(r.batch_number)} at ${r.observed_proof}°</button>`
+              : `<button class="btn btn-sm" data-dis="accept" title="Catalog proof becomes ${r.observed_proof}° and untouched owner snapshots follow">Set catalog to ${r.observed_proof}°</button>`}
             <button class="btn btn-sm btn-teal" data-dis="variable" title="Proof varies by batch or barrel; stop tracking disagreements for this bottle">Mark variable</button>
             <button class="btn btn-sm btn-secondary" data-dis="dismiss" title="Drop this report; owners keep their own proof">Dismiss</button>
           </div>
@@ -488,9 +490,14 @@
       if (resolution === 'accept' && !confirm(`Set the catalog proof to ${observed_proof}°? Owners who still hold the old catalog value will be updated.`)) return;
       row.querySelectorAll('button').forEach(b => b.disabled = true);
       try {
-        await api('resolve_proof', { bottle_id, observed_proof, resolution });
-        toast(resolution === 'accept' ? 'Catalog proof updated' : resolution === 'variable' ? 'Marked variable' : 'Dismissed');
-        state.disagreements = (state.disagreements || []).filter(r => resolution === 'dismiss'
+        if (resolution === 'create_batch') {
+          const res = await api('create_batch', { parent_id: bottle_id, batch_label: btn.dataset.label, proof: observed_proof });
+          toast(`${res.created ? 'Created' : 'Already existed:'} batch ${res.batch_label}` + (res.repointed ? ` · ${res.repointed} owner${res.repointed === 1 ? '' : 's'} moved` : ''));
+        } else {
+          await api('resolve_proof', { bottle_id, observed_proof, resolution });
+          toast(resolution === 'accept' ? 'Catalog proof updated' : resolution === 'variable' ? 'Marked variable' : 'Dismissed');
+        }
+        state.disagreements = (state.disagreements || []).filter(r => (resolution === 'dismiss' || resolution === 'create_batch')
           ? !(String(r.bottle_id) === bottle_id && String(r.observed_proof) === observed_proof)
           : String(r.bottle_id) !== bottle_id);
         renderDisagreements();
