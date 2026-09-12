@@ -212,6 +212,15 @@
     .cand-body .cand-name { color: var(--cream); font-weight: 600; }
     .cand-body .cand-name .badge { margin-left: 6px; font-size: 10px; vertical-align: middle; }
     .cand-family { border-color: var(--gold); }
+    .merge-panel { border: 1px solid var(--teal); border-radius: 8px; padding: 12px; margin: 4px 0 10px; background: var(--bg); }
+    .merge-head { font-size: 13px; color: var(--cream); margin-bottom: 8px; }
+    .merge-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px; }
+    .merge-table th { text-align: left; font-size: 10px; letter-spacing: 1px; color: var(--cream-dim); font-weight: 600; padding: 4px 8px; }
+    .merge-table td { padding: 6px 8px; border-top: 1px solid var(--border); vertical-align: top; }
+    .merge-table td label { cursor: pointer; }
+    .merge-table td input { margin-right: 6px; }
+    .merge-label { color: var(--cream-dim); width: 110px; }
+    .merge-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .cand-body .cand-sub { color: var(--cream-dim); font-size: 12px; }
     .cand-thumb { width: 32px; height: 42px; border-radius: 4px; object-fit: cover; background: var(--bg-elev); flex-shrink: 0; }
     .cand .badge { flex-shrink: 0; }
@@ -363,6 +372,7 @@
       batchId: null,      // active batch filter (null = all)
       pendingTotal: 0,
       pendingImport: 0,
+      candById: {},       // candidate id → candidate object (matches + search results)
       disagreements: [],  // rows from v_proof_disagreements
       disAll: false,      // false = 2+ users only
     };
@@ -572,6 +582,7 @@
     }
 
     function candidateRow(c, showScore = true) {
+      state.candById[c.id] = c;
       const img = safeUrl(c.image_url);
       const sub = [
         c.distillery ? esc(c.distillery) : null,
@@ -711,8 +722,80 @@
       const action = btn.dataset.action;
       if (action === 'approve') approveItem(id, card, btn);
       else if (action === 'reject') rejectItem(id, card, btn);
-      else if (action === 'merge') mergeItem(id, card, btn.dataset.target, btn);
+      else if (action === 'merge') openMergePanel(id, card, btn.dataset.target, btn);
+      else if (action === 'merge-confirm') mergeItem(id, card, btn.dataset.target, btn, collectMergeChoices(btn.closest('.merge-panel')));
+      else if (action === 'merge-cancel') btn.closest('.merge-panel').remove();
     });
+
+    // ─── Merge with field choices ──────────────────────────────────────
+    // Quick merge keeps the catalog values. The panel lists every field where the
+    // submission (as currently edited on the card) differs from the catalog row and
+    // lets you pick which side wins; chosen submission values are sent as `backfill`
+    // and overwrite the catalog on merge (proof corrections propagate to owners).
+    const MERGE_FIELDS = [
+      ['name', 'Name', v => v],
+      ['distillery', 'Distillery', v => v],
+      ['type', 'Type', v => TYPE_LABEL[v] || v],
+      ['proof', 'Proof', v => v],
+      ['age_statement', 'Age', v => v == null || v === '' ? 'NAS' : v + ' yr'],
+      ['vintage_year', 'Release year', v => v],
+      ['upc', 'UPC', v => v],
+    ];
+    const blank = v => v === null || v === undefined || v === '';
+    const same = (a, b) => (blank(a) && blank(b)) || String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+
+    function openMergePanel(id, card, targetId, btn) {
+      if (!targetId) return;
+      if (String(targetId) === String(id)) { toast('Cannot merge a bottle into itself', 'error'); return; }
+      const cand = state.candById[targetId] || {};
+      const pending = readEdits(card);
+      card.querySelectorAll('.merge-panel').forEach(p => p.remove());
+      const diffs = MERGE_FIELDS.filter(([k]) => !same(cand[k], pending[k]) && !blank(pending[k]));
+      const row = btn.closest('.cand');
+      const targetName = cand.is_family ? `${cand.name} (batch family)` : cand.batch_label ? `${cand.parent_name || cand.name} · Batch ${cand.batch_label}` : (cand.name || 'catalog entry');
+      const panel = document.createElement('div');
+      panel.className = 'merge-panel';
+      panel.dataset.target = targetId;
+      if (!diffs.length) {
+        panel.innerHTML = `<div class="merge-head">Merge into <b>${esc(targetName)}</b></div>
+          <div class="muted" style="margin:6px 0 10px">Every field already matches the catalog. Owners are re-pointed and an alias is saved.</div>
+          <div class="merge-actions"><button class="btn btn-teal btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}">Merge</button>
+          <button class="btn btn-secondary btn-sm" data-action="merge-cancel">Cancel</button></div>`;
+      } else {
+        panel.innerHTML = `<div class="merge-head">Merge into <b>${esc(targetName)}</b> <span class="muted">· choose what the catalog keeps</span></div>
+          <table class="merge-table"><thead><tr><th></th><th>Catalog</th><th>Submission</th></tr></thead><tbody>
+          ${diffs.map(([k, label, fmt]) => {
+            const cv = cand[k], pv = pending[k];
+            const catalogEmpty = blank(cv);
+            return `<tr data-field="${k}">
+              <td class="merge-label">${label}</td>
+              <td><label><input type="radio" name="m-${esc(id)}-${k}" value="catalog" ${catalogEmpty ? '' : 'checked'} ${catalogEmpty ? 'disabled' : ''}> ${catalogEmpty ? '<span class="muted">empty</span>' : esc(fmt(cv))}</label></td>
+              <td><label><input type="radio" name="m-${esc(id)}-${k}" value="submission" ${catalogEmpty ? 'checked' : ''}> ${esc(fmt(pv))}</label></td>
+            </tr>`;
+          }).join('')}
+          </tbody></table>
+          <div class="merge-actions">
+            <button class="btn btn-teal btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}">Merge with selections</button>
+            <button class="btn btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}" data-quick="1">Quick merge (keep catalog)</button>
+            <button class="btn btn-secondary btn-sm" data-action="merge-cancel">Cancel</button>
+          </div>`;
+      }
+      (row || card.querySelector('.matches')).insertAdjacentElement('afterend', panel);
+      panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    function collectMergeChoices(panel) {
+      if (!panel) return {};
+      const card = panel.closest('.item');
+      const pending = readEdits(card);
+      const backfill = {};
+      panel.querySelectorAll('tr[data-field]').forEach(tr => {
+        const k = tr.dataset.field;
+        const pick = tr.querySelector('input[type=radio]:checked')?.value;
+        if (pick === 'submission' && !blank(pending[k])) backfill[k] = pending[k];
+      });
+      return backfill;
+    }
 
     itemsEl.addEventListener('input', (e) => {
       if (!e.target.classList.contains('f-search')) return;
@@ -777,17 +860,16 @@
       }
     }
 
-    async function mergeItem(id, card, targetId, btn) {
+    async function mergeItem(id, card, targetId, btn, backfill = {}) {
       if (!targetId) return;
-      const pendingName = card.querySelector('.f-name').value.trim() || bottleOf(state.itemsById[id] || {}).name || 'this bottle';
-      const row = btn.closest('.cand');
-      const targetName = row ? (row.querySelector('.cand-name')?.textContent || 'catalog entry') : 'catalog entry';
+      if (btn.dataset.quick) backfill = {};
+      const cand = state.candById[targetId] || {};
+      const targetName = cand.name || 'catalog entry';
       if (String(targetId) === String(id)) { toast('Cannot merge a bottle into itself', 'error'); return; }
-      if (!confirm(`Merge '${pendingName}' into '${targetName}'? Users' bottles will be re-pointed and an alias saved.`)) return;
       const label = btn.textContent;
       setBusy(card, true); btn.textContent = 'Merging…';
       try {
-        const res = await api('merge', { duplicate_id: id, canonical_id: targetId });
+        const res = await api('merge', { duplicate_id: id, canonical_id: targetId, backfill });
         const n = Number(res.repointed);
         toast(`Merged into “${targetName}”` + (isNaN(n) ? '' : ` · ${n} bottle${n === 1 ? '' : 's'} re-pointed`));
         removeCard(id, card);
