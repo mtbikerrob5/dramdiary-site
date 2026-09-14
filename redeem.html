@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="robots" content="noindex,nofollow"/>
-  <title>Redeem Code — Dram Diary™</title>
+  <title>Redeem Your Premium Code | Dram Diary™</title>
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png"/>
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
   <style>
@@ -15,42 +15,36 @@
       color: #f5f0e8;
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 24px;
+      padding: 24px 16px 40px;
+      -webkit-text-size-adjust: 100%;
     }
     .card {
       background: #262626;
       border-radius: 16px;
-      padding: 44px 36px;
-      max-width: 460px;
+      padding: 36px 28px 32px;
+      max-width: 480px;
       width: 100%;
       border: 1px solid rgba(201,168,76,0.2);
       border-top: 2px solid #C9A84C;
     }
+    @media (min-width: 480px) { .card { padding: 40px 36px 34px; } }
+
     .logo {
       display: block;
-      font-family: -apple-system, sans-serif;
       font-size: 11px;
       letter-spacing: 3px;
       color: #C9A84C;
       font-weight: 700;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       text-align: center;
       text-decoration: none;
     }
-    .home-link {
-      display: block;
-      margin-top: 20px;
-      font-size: 12px;
-      color: #8B6914;
-      text-decoration: none;
-      text-align: center;
-      transition: color 0.15s;
-    }
-    .home-link:hover { color: #C9A84C; }
+    .logo:hover { color: #d8b65a; }
     h1 {
-      font-size: 24px;
+      font-size: 26px;
+      line-height: 1.2;
       font-weight: 700;
       color: #f5f0e8;
       margin-bottom: 10px;
@@ -60,9 +54,95 @@
       font-size: 14px;
       color: #C8B89A;
       line-height: 1.6;
-      margin-bottom: 28px;
       text-align: center;
     }
+
+    /* ── Steps ─────────────────────────────────────────── */
+    .steps { margin-top: 30px; }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      column-gap: 14px;
+      padding-bottom: 24px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    /* connector line down the left rail */
+    .step:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 34px;
+      bottom: 4px;
+      width: 1px;
+      background: rgba(201,168,76,0.22);
+    }
+    .num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.45);
+      color: #C9A84C;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .step.current .num {
+      background: #C9A84C;
+      border-color: #C9A84C;
+      color: #1a1a1a;
+    }
+    .step-body { padding-top: 3px; }
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f5f0e8;
+      line-height: 1.35;
+      margin-bottom: 5px;
+    }
+    .step-text {
+      font-size: 13px;
+      color: #a8957a;
+      line-height: 1.6;
+    }
+    .step-text strong { color: #C8B89A; font-weight: 600; }
+
+    .btn-appstore {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      padding: 13px 16px;
+      border-radius: 8px;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid #C9A84C;
+      color: #C9A84C;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-appstore:hover { background: #C9A84C; color: #1a1a1a; }
+    .free-tag {
+      display: inline-block;
+      margin-left: 7px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(76,148,142,0.18);
+      color: #6ab4ae;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      vertical-align: 2px;
+    }
+
+    /* ── Form ──────────────────────────────────────────── */
+    form { margin-top: 16px; }
     label {
       display: block;
       font-size: 11px;
@@ -70,9 +150,9 @@
       color: #a8957a;
       text-transform: uppercase;
       font-weight: 600;
-      margin-bottom: 8px;
-      margin-top: 18px;
+      margin-bottom: 7px;
     }
+    .field + .field { margin-top: 16px; }
     input[type=email], input[type=text] {
       width: 100%;
       background: #1a1a1a;
@@ -80,81 +160,99 @@
       border-radius: 8px;
       padding: 13px 14px;
       color: #f5f0e8;
-      font-size: 15px;
+      font-size: 16px;
       font-family: inherit;
       transition: border-color 0.15s;
     }
-    input:focus {
-      outline: none;
-      border-color: #C9A84C;
-    }
+    input:focus { outline: none; border-color: #C9A84C; }
     input.code {
       font-family: Menlo, monospace;
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .help {
-      font-size: 11px;
-      color: #7A6E5F;
-      margin-top: 6px;
-      line-height: 1.5;
-    }
+    .help { font-size: 11px; color: #7A6E5F; margin-top: 6px; line-height: 1.5; }
     .btn {
       display: block;
       width: 100%;
       background: #C9A84C;
       color: #1a1a1a;
       border: none;
-      padding: 15px;
+      padding: 16px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 700;
       letter-spacing: 2px;
       cursor: pointer;
       text-transform: uppercase;
-      margin-top: 28px;
+      margin-top: 22px;
+      font-family: inherit;
       transition: background 0.15s;
     }
     .btn:hover:not(:disabled) { background: #d8b65a; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-note {
+      font-size: 11px;
+      color: #7A6E5F;
+      text-align: center;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
     .alert {
-      margin-top: 18px;
+      margin-top: 16px;
       padding: 12px 14px;
       border-radius: 8px;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
     .alert.error {
       background: rgba(192,57,43,0.12);
       border: 1px solid rgba(192,57,43,0.4);
       color: #f5a89e;
     }
-    .alert.success {
-      background: rgba(76,148,142,0.12);
-      border: 1px solid rgba(76,148,142,0.4);
-      color: #6ab4ae;
-    }
+    .alert .btn-appstore { margin-top: 12px; }
+
     .divider {
       height: 1px;
       background: linear-gradient(to right, transparent, rgba(201,168,76,0.2), transparent);
-      margin: 28px 0 20px;
+      margin: 28px 0 18px;
     }
-    .footer-note {
-      font-size: 12px;
-      color: #7A6E5F;
-      line-height: 1.6;
-      text-align: center;
-    }
+    .footer-note { font-size: 12px; color: #7A6E5F; line-height: 1.7; text-align: center; }
     .footer-note a { color: #8B6914; text-decoration: none; }
     .footer-note a:hover { color: #C9A84C; }
     .footer {
-      margin-top: 24px;
+      margin-top: 20px;
       font-size: 11px;
       color: #5a5a5a;
       letter-spacing: 1px;
       text-align: center;
     }
     .emoji { font-size: 48px; line-height: 1; margin-bottom: 18px; text-align: center; }
+
+    /* ── Success state ─────────────────────────────────── */
+    .next-steps {
+      margin-top: 24px;
+      padding: 16px 18px;
+      border-radius: 10px;
+      background: rgba(201,168,76,0.06);
+      border: 1px solid rgba(201,168,76,0.18);
+    }
+    .next-steps h2 {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #C9A84C;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .next-steps ol { margin: 0; padding-left: 18px; }
+    .next-steps li {
+      font-size: 13px;
+      color: #C8B89A;
+      line-height: 1.65;
+      margin-bottom: 5px;
+    }
+    .next-steps li:last-child { margin-bottom: 0; }
   </style>
   <!-- HeyCatch analytics -->
   <script type="module">
@@ -169,53 +267,95 @@
   <div class="card">
     <a class="logo" href="https://www.dramdiary.com/">DRAM DIARY™</a>
 
-    <!-- Form state -->
+    <!-- ══ Form state ══ -->
     <div id="form-state">
-      <h1>Redeem Premium Code</h1>
-      <p class="subtitle">Enter the email tied to your Dram Diary account and your code to activate Premium.</p>
+      <h1>Redeem Your Premium Code</h1>
+      <p class="subtitle">Three steps, about two minutes. You will need the app and an account before your code can be applied.</p>
 
-      <form id="redeem-form" onsubmit="return false">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required/>
-        <p class="help">Use the same email you signed in with on your iPhone.</p>
+      <div class="steps">
 
-        <label for="code">Code</label>
-        <input type="text" id="code" class="code" placeholder="ENTER-YOUR-CODE" autocomplete="off" autocapitalize="characters" autocorrect="off" required/>
+        <div class="step">
+          <div class="num">1</div>
+          <div class="step-body">
+            <div class="step-title">Download Dram Diary <span class="free-tag">FREE</span></div>
+            <p class="step-text">Get the app on your iPhone from the App Store. Skip this step if you already have it.</p>
+            <a class="btn-appstore" href="https://apps.apple.com/us/app/dram-diary/id6760627043" target="_blank" rel="noopener">Get it on the App Store</a>
+          </div>
+        </div>
 
-        <button type="submit" class="btn" id="submit-btn">Activate Premium</button>
-        <p class="help" style="text-align:center; margin-top:10px;">We'll email you a confirmation link — Premium turns on when you click it.</p>
+        <div class="step">
+          <div class="num">2</div>
+          <div class="step-body">
+            <div class="step-title">Create your account in the app</div>
+            <p class="step-text">Open Dram Diary and sign up. <strong>Remember the email address you use,</strong> you will need it in the next step. Already signed up? Use that same email.</p>
+          </div>
+        </div>
 
-        <div id="error-box" class="alert error" style="display:none;"></div>
-      </form>
+        <div class="step current">
+          <div class="num">3</div>
+          <div class="step-body">
+            <div class="step-title">Redeem your code below</div>
+            <p class="step-text">Enter the email on your Dram Diary account and the code from your card or QR link.</p>
+
+            <form id="redeem-form" onsubmit="return false">
+              <div class="field">
+                <label for="email">Account Email</label>
+                <input type="email" id="email" placeholder="you@example.com" autocomplete="email" inputmode="email" required/>
+                <p class="help">Must match the email you signed in with on your iPhone.</p>
+              </div>
+
+              <div class="field">
+                <label for="code">Promo Code</label>
+                <input type="text" id="code" class="code" placeholder="ENTER-YOUR-CODE" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" required/>
+              </div>
+
+              <button type="submit" class="btn" id="submit-btn">Activate Premium</button>
+              <p class="btn-note">We will email you a confirmation link. Premium turns on the moment you tap it.</p>
+
+              <div id="error-box" class="alert error" style="display:none;"></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
 
       <div class="divider"></div>
       <p class="footer-note">
-        Don't have an account yet?<br/>
-        <a href="https://apps.apple.com/us/app/dram-diary/id6760627043" target="_blank" rel="noopener">Download Dram Diary on the App Store</a>, sign up, then come back here to redeem.
+        Questions? <a href="mailto:support@dramdiary.com">support@dramdiary.com</a><br/>
+        <a href="https://www.dramdiary.com/">← Back to dramdiary.com</a>
       </p>
     </div>
 
-    <!-- Success state -->
+    <!-- ══ Success state ══ -->
     <div id="success-state" style="display:none;">
       <div class="emoji">📩</div>
-      <h1>Check Your Email to Confirm</h1>
+      <h1>One Last Tap</h1>
       <p class="subtitle">
-        We sent a confirmation link to <strong id="sent-to" style="color:#C9A84C"></strong>. Click it to activate Premium on your account. The link expires in 30 minutes.
+        We sent a confirmation link to <strong id="sent-to" style="color:#C9A84C"></strong>. Open it to finish activating Premium. The link expires in 30 minutes.
       </p>
+
+      <div class="next-steps">
+        <h2>What happens next</h2>
+        <ol>
+          <li>Open the email on your iPhone and tap the confirmation link.</li>
+          <li>You will see a Premium Activated page with your expiration date.</li>
+          <li>Reopen Dram Diary. Premium features unlock right away.</li>
+        </ol>
+      </div>
+
       <div class="divider"></div>
       <p class="footer-note">
-        Didn't get the email? Check your spam folder, or
-        <a href="#" onclick="resetForm(); return false;">try again</a>.
+        No email after a minute or two? Check your spam folder, or <a href="#" onclick="resetForm(); return false;">start over</a>.
       </p>
     </div>
 
-    <a class="home-link" href="https://www.dramdiary.com/">&larr; Back to dramdiary.com</a>
     <div class="footer">© 2026 Blanchard Labs LLC</div>
   </div>
 
   <script>
     const FUNCTION_URL = 'https://okxuvrrcpvzchzoictsf.supabase.co/functions/v1/redeem-promo-public';
     const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reHV2cnJjcHZ6Y2h6b2ljdHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTU2MTAsImV4cCI6MjA4ODc3MTYxMH0.tQhWE2maV4eJLPoIlHYZW_lZzhgr5JX65jhK3R8zRmg';
+    const APP_STORE_URL = 'https://apps.apple.com/us/app/dram-diary/id6760627043';
 
     const form = document.getElementById('redeem-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -223,9 +363,23 @@
 
     function showError(msg) {
       errorBox.textContent = msg;
+      // If the account is missing, put the download action right in the error.
+      if (/no dram diary account/i.test(msg)) {
+        const a = document.createElement('a');
+        a.className = 'btn-appstore';
+        a.href = APP_STORE_URL;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = 'Get it on the App Store';
+        errorBox.appendChild(a);
+      }
       errorBox.style.display = '';
+      errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-    function hideError() { errorBox.style.display = 'none'; }
+    function hideError() {
+      errorBox.textContent = '';
+      errorBox.style.display = 'none';
+    }
 
     function resetForm() {
       document.getElementById('success-state').style.display = 'none';
@@ -233,19 +387,26 @@
       hideError();
       submitBtn.disabled = false;
       submitBtn.textContent = 'Activate Premium';
+      window.scrollTo({ top: 0 });
     }
+
+    // Prefill the code from a QR link like /redeem.html?code=BREWLOUNGE
+    (function prefillFromQuery() {
+      const c = new URLSearchParams(window.location.search).get('code');
+      if (c) document.getElementById('code').value = c.trim().toUpperCase();
+    })();
 
     form.addEventListener('submit', async () => {
       hideError();
       const email = document.getElementById('email').value.trim();
       const code  = document.getElementById('code').value.trim().toUpperCase();
       if (!email || !code) {
-        showError('Please enter both your email and your code.');
+        showError('Please enter both your account email and your code.');
         return;
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending your link…';
+      submitBtn.textContent = 'Sending…';
 
       try {
         const res = await fetch(FUNCTION_URL, {
@@ -263,10 +424,10 @@
           submitBtn.textContent = 'Activate Premium';
           return;
         }
-        // Success — show "check your email"
         document.getElementById('sent-to').textContent = email;
         document.getElementById('form-state').style.display = 'none';
         document.getElementById('success-state').style.display = '';
+        window.scrollTo({ top: 0 });
       } catch (e) {
         showError('Network error. Please check your connection and try again.');
         submitBtn.disabled = false;
