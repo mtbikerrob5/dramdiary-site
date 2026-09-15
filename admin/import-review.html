@@ -732,7 +732,7 @@
     });
 
     // ─── Merge with field choices ──────────────────────────────────────
-    // Quick merge keeps the catalog values. The panel lists every field where the
+    // Quick merge keeps the catalog values and fills its blanks. The panel lists every field where the
     // submission (as currently edited on the card) differs from the catalog row and
     // lets you pick which side wins; chosen submission values are sent as `backfill`
     // and overwrite the catalog on merge (proof corrections propagate to owners).
@@ -754,12 +754,17 @@
       const cand = state.candById[targetId] || {};
       const pending = readEdits(card);
       card.querySelectorAll('.merge-panel').forEach(p => p.remove());
-      // A variable-proof (or batched) target never takes a submission's proof: that number
-      // belongs to one barrel and lives on the owner's bottle, not on the catalog row.
+      // A variable-proof (or batched) target never takes a submission's proof or age: those
+      // belong to one barrel and live on the owner's bottle, not on the catalog row.
       const proofVaries = cand.proof_policy && cand.proof_policy !== 'fixed';
-      const diffs = MERGE_FIELDS.filter(([k]) => !same(cand[k], pending[k]) && !blank(pending[k]) && !(k === 'proof' && proofVaries));
-      const proofNote = proofVaries && !blank(pending.proof)
-        ? `<div class="muted" style="margin:0 0 10px">Proof ${esc(pending.proof)} stays on the owner's bottle. The catalog row is marked <b>${cand.proof_policy === 'batched' ? 'curated batches' : 'varies by batch / barrel'}</b>, so its proof is left as is.</div>`
+      const PER_BARREL = ['proof', 'age_statement'];
+      const diffs = MERGE_FIELDS.filter(([k]) => !same(cand[k], pending[k]) && !blank(pending[k]) && !(proofVaries && PER_BARREL.includes(k)));
+      const kept = proofVaries ? [
+        !blank(pending.proof) ? `proof ${esc(pending.proof)}` : null,
+        !blank(pending.age_statement) ? `age ${esc(pending.age_statement)} yr` : null,
+      ].filter(Boolean) : [];
+      const proofNote = kept.length
+        ? `<div class="muted" style="margin:0 0 10px">${kept.join(' and ').replace(/^./, c => c.toUpperCase())} ${kept.length > 1 ? 'stay' : 'stays'} on the owner's bottle. The catalog row is marked <b>${cand.proof_policy === 'batched' ? 'curated batches' : 'varies by batch / barrel'}</b>, so its proof and age are left as they are.</div>`
         : '';
       const row = btn.closest('.cand');
       const targetName = cand.is_family ? `${cand.name} (batch family)` : cand.batch_label ? `${cand.parent_name || cand.name} · Batch ${cand.batch_label}` : (cand.name || 'catalog entry');
@@ -778,9 +783,11 @@
           ${diffs.map(([k, label, fmt]) => {
             const cv = cand[k], pv = pending[k];
             const catalogEmpty = blank(cv);
-            return `<tr data-field="${k}">
+            // Catalog empty: default to filling it from the submission, but "leave empty" is a
+            // real choice (sent as an explicit null so the merge does not blank-fill it).
+            return `<tr data-field="${k}" data-catalog-empty="${catalogEmpty ? 1 : 0}">
               <td class="merge-label">${label}</td>
-              <td><label><input type="radio" name="m-${esc(id)}-${k}" value="catalog" ${catalogEmpty ? '' : 'checked'} ${catalogEmpty ? 'disabled' : ''}> ${catalogEmpty ? '<span class="muted">empty</span>' : esc(fmt(cv))}</label></td>
+              <td><label><input type="radio" name="m-${esc(id)}-${k}" value="catalog" ${catalogEmpty ? '' : 'checked'}> ${catalogEmpty ? '<span class="muted">leave empty</span>' : esc(fmt(cv))}</label></td>
               <td><label><input type="radio" name="m-${esc(id)}-${k}" value="submission" ${catalogEmpty ? 'checked' : ''}> ${esc(fmt(pv))}</label></td>
             </tr>`;
           }).join('')}
@@ -788,7 +795,7 @@
           ${proofNote}
           <div class="merge-actions">
             <button class="btn btn-teal btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}">Merge with selections</button>
-            <button class="btn btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}" data-quick="1">Quick merge (keep catalog)</button>
+            <button class="btn btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}" data-quick="1" title="Keeps every catalog value; empty catalog fields are filled from the submission (except proof and age on rows whose proof varies)">Quick merge (keep catalog, fill blanks)</button>
             <button class="btn btn-secondary btn-sm" data-action="merge-cancel">Cancel</button>
           </div>`;
       }
@@ -805,6 +812,9 @@
         const k = tr.dataset.field;
         const pick = tr.querySelector('input[type=radio]:checked')?.value;
         if (pick === 'submission' && !blank(pending[k])) backfill[k] = pending[k];
+        // "Leave empty" on an empty catalog field: say so explicitly, otherwise the merge
+        // would blank-fill it from the submission anyway.
+        else if (pick === 'catalog' && tr.dataset.catalogEmpty === '1') backfill[k] = null;
       });
       return backfill;
     }
