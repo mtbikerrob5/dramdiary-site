@@ -601,6 +601,8 @@
       } else if (c.batch_label) {
         nameHtml = `${esc(c.parent_name || c.name)} <span class="muted">·</span> Batch ${esc(c.batch_label)}`;
         tag = `<span class="badge badge-lo">batch</span>`;
+      } else if (c.proof_policy === 'variable') {
+        tag = `<span class="badge badge-lo" title="Proof varies by batch or barrel. Owners keep their own proof; the catalog proof is only typical.">proof varies</span>`;
       }
       const mergeLabel = c.is_family ? 'Merge into family' : c.batch_label ? `Merge into batch ${esc(c.batch_label)}` : 'Merge into this';
       return `<div class="cand${c.is_family ? ' cand-family' : ''}" data-cand-id="${esc(c.id)}">
@@ -752,7 +754,13 @@
       const cand = state.candById[targetId] || {};
       const pending = readEdits(card);
       card.querySelectorAll('.merge-panel').forEach(p => p.remove());
-      const diffs = MERGE_FIELDS.filter(([k]) => !same(cand[k], pending[k]) && !blank(pending[k]));
+      // A variable-proof (or batched) target never takes a submission's proof: that number
+      // belongs to one barrel and lives on the owner's bottle, not on the catalog row.
+      const proofVaries = cand.proof_policy && cand.proof_policy !== 'fixed';
+      const diffs = MERGE_FIELDS.filter(([k]) => !same(cand[k], pending[k]) && !blank(pending[k]) && !(k === 'proof' && proofVaries));
+      const proofNote = proofVaries && !blank(pending.proof)
+        ? `<div class="muted" style="margin:0 0 10px">Proof ${esc(pending.proof)} stays on the owner's bottle. The catalog row is marked <b>${cand.proof_policy === 'batched' ? 'curated batches' : 'varies by batch / barrel'}</b>, so its proof is left as is.</div>`
+        : '';
       const row = btn.closest('.cand');
       const targetName = cand.is_family ? `${cand.name} (batch family)` : cand.batch_label ? `${cand.parent_name || cand.name} · Batch ${cand.batch_label}` : (cand.name || 'catalog entry');
       const panel = document.createElement('div');
@@ -761,6 +769,7 @@
       if (!diffs.length) {
         panel.innerHTML = `<div class="merge-head">Merge into <b>${esc(targetName)}</b></div>
           <div class="muted" style="margin:6px 0 10px">Every field already matches the catalog. Owners are re-pointed and an alias is saved.</div>
+          ${proofNote}
           <div class="merge-actions"><button class="btn btn-teal btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}">Merge</button>
           <button class="btn btn-secondary btn-sm" data-action="merge-cancel">Cancel</button></div>`;
       } else {
@@ -776,6 +785,7 @@
             </tr>`;
           }).join('')}
           </tbody></table>
+          ${proofNote}
           <div class="merge-actions">
             <button class="btn btn-teal btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}">Merge with selections</button>
             <button class="btn btn-sm" data-action="merge-confirm" data-target="${esc(targetId)}" data-quick="1">Quick merge (keep catalog)</button>
