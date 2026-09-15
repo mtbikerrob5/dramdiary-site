@@ -445,6 +445,8 @@
           state.batchId = null;
         }
         state.items = Array.isArray(list.items) ? list.items : [];
+        // Never let a matcher failure masquerade as "no matches": say so.
+        if (list.match_error) toast('Catalog match lookup failed for some items: ' + list.match_error, 'error');
         state.itemsById = {};
         state.items.forEach(it => { state.itemsById[bottleOf(it).id] = it; });
         if (!stats) {
