@@ -125,6 +125,18 @@
       projectKey: 'hck_pk_WPCY4ZQIhEZjva6RhUF2x944g8xkNgYT',
       install: { framework: 'web', agent: 'claude-code' },
     });
+    // Business outcomes the site can see (pageviews and generic clicks are autocaptured):
+    // the App Store hand-off, the import template download, and the confirm page's
+    // "open the app" hand-off. One delegated listener; pages without these links send nothing.
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (!a) return;
+      const href = a.getAttribute('href') || '';
+      const page = location.pathname;
+      if (href.includes('apps.apple.com')) analytics.trackEvent('app_store_clicked', { page });
+      else if (a.hasAttribute('download') && /\.xlsx$/i.test(href)) analytics.trackEvent('import_template_downloaded', { page });
+      else if (a.id === 'open-btn' || href.startsWith('dramdiary://')) analytics.trackEvent('confirm_open_app_clicked', { page });
+    }, { capture: true });
   </script>
 </head>
 <body>
