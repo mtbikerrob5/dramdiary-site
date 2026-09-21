@@ -754,17 +754,19 @@
       const cand = state.candById[targetId] || {};
       const pending = readEdits(card);
       card.querySelectorAll('.merge-panel').forEach(p => p.remove());
-      // A variable-proof (or batched) target never takes a submission's proof or age: those
-      // belong to one barrel and live on the owner's bottle, not on the catalog row.
+      // A variable-proof (or batched) target never takes a submission's proof, age or release
+      // year: those describe one barrel and live on the owner's bottle, not the catalog row.
       const proofVaries = cand.proof_policy && cand.proof_policy !== 'fixed';
-      const PER_BARREL = ['proof', 'age_statement'];
+      const PER_BARREL = ['proof', 'age_statement', 'vintage_year'];
       const diffs = MERGE_FIELDS.filter(([k]) => !same(cand[k], pending[k]) && !blank(pending[k]) && !(proofVaries && PER_BARREL.includes(k)));
       const kept = proofVaries ? [
         !blank(pending.proof) ? `proof ${esc(pending.proof)}` : null,
         !blank(pending.age_statement) ? `age ${esc(pending.age_statement)} yr` : null,
+        !blank(pending.vintage_year) ? `release year ${esc(pending.vintage_year)}` : null,
       ].filter(Boolean) : [];
+      const joinList = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0];
       const proofNote = kept.length
-        ? `<div class="muted" style="margin:0 0 10px">${kept.join(' and ').replace(/^./, c => c.toUpperCase())} ${kept.length > 1 ? 'stay' : 'stays'} on the owner's bottle. The catalog row is marked <b>${cand.proof_policy === 'batched' ? 'curated batches' : 'varies by batch / barrel'}</b>, so its proof and age are left as they are.</div>`
+        ? `<div class="muted" style="margin:0 0 10px">${joinList(kept).replace(/^./, c => c.toUpperCase())} ${kept.length > 1 ? 'stay' : 'stays'} on the owner's bottle. The catalog row is marked <b>${cand.proof_policy === 'batched' ? 'curated batches' : 'varies by batch / barrel'}</b>, so its proof, age and release year are left as they are.</div>`
         : '';
       const row = btn.closest('.cand');
       const targetName = cand.is_family ? `${cand.name} (batch family)` : cand.batch_label ? `${cand.parent_name || cand.name} · Batch ${cand.batch_label}` : (cand.name || 'catalog entry');
